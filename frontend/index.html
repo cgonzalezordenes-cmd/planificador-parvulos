@@ -21,7 +21,6 @@
   .day-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
   .day-tab { padding: 7px 18px; border-radius: 20px; border: 1px solid #cbd5e1; font-size: 13px; cursor: pointer; background: white; color: #64748b; transition: all 0.2s; }
   .day-tab.active { background: #185FA5; color: white; border-color: #185FA5; }
-  .day-tab.done   { border-color: #1D9E75; color: #1D9E75; }
   .day-panel { display: none; }
   .day-panel.active { display: block; }
   .oa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
@@ -33,66 +32,52 @@
   .oa-num { font-size: 11px; font-weight: 600; color: #185FA5; white-space: nowrap; }
   .section-title { font-size: 12px; font-weight: 600; color: #475569; margin: 14px 0 8px; text-transform: uppercase; letter-spacing: 0.4px; }
   .nucleo-header { grid-column: 1 / -1; font-size: 11px; font-weight: 600; color: #1D9E75; margin-top: 6px; }
-  .config-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding: 10px 14px; background: #FFF7ED; border-radius: 8px; border: 1px solid #FAC775; }
-  .config-row label { font-size: 12px; color: #633806; font-weight: 500; white-space: nowrap; }
-  .config-row input { flex: 1; padding: 6px 10px; border: 1px solid #FAC775; border-radius: 6px; font-size: 12px; font-family: monospace; background: white; }
-
-  /* Botones */
   .btn { padding: 11px 20px; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 7px; }
-  .btn-primary  { background: #185FA5; color: white; width: 100%; justify-content: center; }
-  .btn-primary:hover  { background: #0C447C; }
-  .btn-green    { background: #1D9E75; color: white; }
-  .btn-green:hover    { background: #0F6E56; }
-  .btn-purple   { background: #534AB7; color: white; }
-  .btn-purple:hover   { background: #3C3489; }
+  .btn-primary { background: #185FA5; color: white; width: 100%; justify-content: center; }
+  .btn-primary:hover { background: #0C447C; }
+  .btn-green  { background: #1D9E75; color: white; }
+  .btn-green:hover  { background: #0F6E56; }
+  .btn-purple { background: #534AB7; color: white; }
+  .btn-purple:hover { background: #3C3489; }
   .btn:disabled { background: #94a3b8; cursor: not-allowed; }
-  .btn-row { display: flex; gap: 12px; margin-top: 16px; }
-
-  /* Status */
+  .btn-row { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
   .status { margin-top: 14px; padding: 13px 16px; border-radius: 10px; font-size: 13px; display: none; }
   .status.loading { background: #EFF6FF; color: #185FA5; border: 1px solid #B5D4F4; display: block; }
   .status.error   { background: #FEF2F2; color: #A32D2D; border: 1px solid #F7C1C1; display: block; }
   .status.success { background: #E1F5EE; color: #085041; border: 1px solid #9FE1CB; display: block; }
   .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #B5D4F4; border-top-color: #185FA5; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 6px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Preview */
   .preview-card { background: white; border-radius: 12px; border: 2px solid #1D9E75; padding: 24px; margin-bottom: 20px; display: none; }
   .preview-card h2 { font-size: 14px; font-weight: 600; color: #1D9E75; margin-bottom: 16px; }
-  .preview-day { margin-bottom: 20px; border-left: 3px solid #ADDB7B; padding-left: 14px; }
-  .preview-day h3 { font-size: 13px; font-weight: 600; color: #185FA5; margin-bottom: 8px; }
-  .preview-field { margin-bottom: 6px; font-size: 12px; line-height: 1.6; }
-  .preview-field strong { color: #334155; }
   .preview-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
   .preview-tab { padding: 5px 14px; border-radius: 16px; border: 1px solid #cbd5e1; font-size: 12px; cursor: pointer; background: white; color: #64748b; }
   .preview-tab.active { background: #1D9E75; color: white; border-color: #1D9E75; }
   .preview-panel { display: none; }
   .preview-panel.active { display: block; }
+  .preview-day { border-left: 3px solid #ADDB7B; padding-left: 14px; }
+  .preview-day h3 { font-size: 13px; font-weight: 600; color: #185FA5; margin-bottom: 8px; }
+  .preview-field { margin-bottom: 6px; font-size: 12px; line-height: 1.6; }
+  .preview-field strong { color: #334155; }
+  .familia-block { padding: 8px 10px; background: #E1F5EE; border-radius: 6px; margin-bottom: 4px; font-size: 12px; line-height: 1.6; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Planificador Co-construido y Diversificado</h1>
-  <p>Educación Parvularia · Nivel Medio Menor · Bases Curriculares 2018</p>
+  <h1>Planificador para Giovanna Marino</h1>
+  <p>Educación Parvularia · Nivel Medio Menor · </p>
 </header>
 
 <div class="container">
 
-  <!-- Configuración -->
   <div class="card">
-    <h2>Configuración</h2>
-    <div class="config-row">
-      <label>Groq API Key</label>
-      <input type="password" id="groq-key" placeholder="gsk_..." />
-    </div>
+    <h2>Datos generales</h2>
     <div class="grid-2">
       <div class="field"><label>Educadora</label><input type="text" id="educadora" value="Giovanna Marino" /></div>
       <div class="field"><label>Técnicos</label><input type="text" id="tecnicos" value="Carol Miranda – Helen Oyarzún" /></div>
     </div>
   </div>
 
-  <!-- Fechas -->
   <div class="card">
     <h2>Semana a planificar</h2>
     <div class="grid-2">
@@ -101,7 +86,6 @@
     </div>
   </div>
 
-  <!-- Días -->
   <div class="card">
     <h2>Planificación por día</h2>
     <div class="day-tabs">
@@ -114,7 +98,6 @@
     <div id="dias-container"></div>
   </div>
 
-  <!-- Botón generar -->
   <div class="card">
     <h2>Paso 1 — Generar contenido</h2>
     <button class="btn btn-primary" onclick="generarPreview()" id="btn-gen">
@@ -123,16 +106,14 @@
     <div class="status" id="status-gen"></div>
   </div>
 
-  <!-- Preview -->
   <div class="preview-card" id="preview-card">
     <h2>Vista previa — Revisa el contenido antes de descargar</h2>
     <div class="preview-tabs" id="preview-tabs"></div>
     <div id="preview-panels"></div>
-
     <div style="border-top:1px solid #e2e8f0; padding-top:16px; margin-top:8px;">
-      <p style="font-size:12px;color:#64748b;margin-bottom:12px;">Paso 2 — Descarga los documentos</p>
+      <p style="font-size:12px;color:#64748b;margin-bottom:4px;">Paso 2 — Descarga los documentos</p>
       <div class="btn-row">
-        <button class="btn btn-green" onclick="descargarDocx('planificacion')" id="btn-plan">
+        <button class="btn btn-green"  onclick="descargarDocx('planificacion')" id="btn-plan">
           Descargar Planificación .docx
         </button>
         <button class="btn btn-purple" onclick="descargarDocx('familia')" id="btn-fam">
@@ -146,6 +127,8 @@
 </div>
 
 <script>
+const API = 'https://planificador-parvulos.azurewebsites.net/api';
+
 const OA_BANK = {
   DPS: {
     "Identidad y Autonomía": [
@@ -221,11 +204,10 @@ const DIAS      = ['Lunes','Martes','Miércoles','Jueves','Viernes'];
 const DIAS_KEYS = ['lunes','martes','miercoles','jueves','viernes'];
 const AMBITOS   = {DPS:'Desarrollo Personal y Social', CI:'Comunicación Integral', ICE:'Interacción y Comprensión del Entorno'};
 
-let selectedOA  = [null,null,null,null,null];
-let selectedOAT = [null,null,null,null,null];
-let aiData      = null;  // Guardamos el resultado de la IA para reutilizar
+let selectedOA = [null,null,null,null,null];
+let selectedOAT= [null,null,null,null,null];
+let aiData     = null;
 
-// ── Construir paneles de días ──
 function buildDayPanels() {
   const container = document.getElementById('dias-container');
   DIAS.forEach((nombre, i) => {
@@ -333,17 +315,12 @@ function validate() {
   return null;
 }
 
-// ── Reset preview cuando cambia algo ──
 function resetPreview() {
   aiData = null;
   document.getElementById('preview-card').style.display = 'none';
 }
 
-// ── PASO 1: Generar preview ──
 async function generarPreview() {
-  const apiKey = document.getElementById('groq-key').value.trim();
-  if (!apiKey) { showStatus('status-gen','error','Ingresa tu Groq API Key.'); return; }
-
   const err = validate();
   if (err) { showStatus('status-gen','error', err); return; }
 
@@ -353,9 +330,9 @@ async function generarPreview() {
   document.getElementById('preview-card').style.display = 'none';
 
   try {
-    const res = await fetch('https://planificador-parvulos.azurewebsites.net/api/generate', {
+    const res = await fetch(`${API}/generate`, {
       method: 'POST',
-      headers: {'Content-Type':'application/json', 'X-Groq-Key': apiKey},
+      headers: {'Content-Type':'application/json'},
       body: JSON.stringify(form)
     });
     if (!res.ok) throw new Error(await res.text());
@@ -370,12 +347,10 @@ async function generarPreview() {
   }
 }
 
-// ── Render preview ──
 function renderPreview(form, ai) {
   const card    = document.getElementById('preview-card');
   const tabsEl  = document.getElementById('preview-tabs');
   const panelEl = document.getElementById('preview-panels');
-
   tabsEl.innerHTML  = '';
   panelEl.innerHTML = '';
 
@@ -400,19 +375,18 @@ function renderPreview(form, ai) {
         <h3>${d.titulo_dia || nombre + ': ' + fd.tema}</h3>
         <div class="preview-field"><strong>OA:</strong> ${fd.oa?.num} — ${fd.oa?.texto}</div>
         <div class="preview-field"><strong>OAT:</strong> ${fd.oat?.num} — ${fd.oat?.texto}</div>
-        <div class="preview-field" style="margin-top:8px"><strong>Inicio:</strong> ${d.inicio || ''}</div>
+        <div class="preview-field" style="margin-top:8px"><strong>Inicio:</strong> ${d.inicio||''}</div>
         <div class="preview-field"><strong>E1 — ${d.escenario_1_titulo||''}:</strong> ${d.escenario_1_desc||''}</div>
         <div class="preview-field"><strong>E2 — ${d.escenario_2_titulo||''}:</strong> ${d.escenario_2_desc||''}</div>
         <div class="preview-field"><strong>E3 — ${d.escenario_3_titulo||''}:</strong> ${d.escenario_3_desc||''}</div>
         <div class="preview-field" style="margin-top:8px"><strong>Ind. OA 1:</strong> ${d.indicador_oa1||''}</div>
         <div class="preview-field"><strong>Ind. OA 2:</strong> ${d.indicador_oa2||''}</div>
         <div class="preview-field"><strong>Ind. OAT:</strong> ${d.indicador_oat||''}</div>
-        <div class="preview-field" style="margin-top:8px;padding:8px;background:#E1F5EE;border-radius:6px">
-          <strong>Info familia — ¿Qué harán los niños?</strong> ${d.que_haran_ninos||''}</div>
-        <div class="preview-field" style="padding:8px;background:#E1F5EE;border-radius:6px">
-          <strong>Info familia — ¿Qué harán las familias?</strong> ${d.que_haran_familias||''}</div>
-        <div class="preview-field" style="padding:8px;background:#E1F5EE;border-radius:6px">
-          <strong>Info familia — ¿Qué necesitamos?</strong> ${d.que_necesitamos||''}</div>
+        <div style="margin-top:10px">
+          <div class="familia-block"><strong>¿Qué harán los niños?</strong> ${d.que_haran_ninos||''}</div>
+          <div class="familia-block"><strong>¿Qué harán las familias?</strong> ${d.que_haran_familias||''}</div>
+          <div class="familia-block"><strong>¿Qué necesitamos?</strong> ${d.que_necesitamos||''}</div>
+        </div>
       </div>`;
     panelEl.appendChild(panel);
   });
@@ -421,12 +395,11 @@ function renderPreview(form, ai) {
   card.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
-// ── PASO 2: Descargar documentos ──
 async function descargarDocx(tipo) {
   if (!aiData) { showStatus('status-dl','error','Primero genera el contenido.'); return; }
 
-  const form    = getFormData();
-  const btnId   = tipo === 'planificacion' ? 'btn-plan' : 'btn-fam';
+  const form     = getFormData();
+  const btnId    = tipo === 'planificacion' ? 'btn-plan' : 'btn-fam';
   const endpoint = tipo === 'planificacion' ? 'download-planificacion' : 'download-familia';
   const filename = tipo === 'planificacion'
     ? `Planificacion_${form.fecha_inicio}.docx`
@@ -436,7 +409,7 @@ async function descargarDocx(tipo) {
   showStatus('status-dl','loading',`<span class="spinner"></span> Generando ${tipo === 'planificacion' ? 'planificación' : 'info familia'}...`);
 
   try {
-    const res = await fetch(`https://planificador-parvulos.azurewebsites.net/api/${endpoint}`, {
+    const res = await fetch(`${API}/${endpoint}`, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({form, ai: aiData})
@@ -448,7 +421,6 @@ async function descargarDocx(tipo) {
     const a    = document.createElement('a');
     a.href = url; a.download = filename; a.click();
     URL.revokeObjectURL(url);
-
     showStatus('status-dl','success',`${filename} descargado correctamente.`);
   } catch(e) {
     showStatus('status-dl','error','Error: ' + e.message);
