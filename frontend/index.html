@@ -353,7 +353,7 @@ async function generarPreview() {
   document.getElementById('preview-card').style.display = 'none';
 
   try {
-    const res = await fetch('http://localhost:7071/api/generate', {
+    const res = await fetch('https://planificador-parvulos.azurewebsites.net/api/generate', {
       method: 'POST',
       headers: {'Content-Type':'application/json', 'X-Groq-Key': apiKey},
       body: JSON.stringify(form)
@@ -436,7 +436,7 @@ async function descargarDocx(tipo) {
   showStatus('status-dl','loading',`<span class="spinner"></span> Generando ${tipo === 'planificacion' ? 'planificación' : 'info familia'}...`);
 
   try {
-    const res = await fetch(`http://localhost:7071/api/${endpoint}`, {
+    const res = await fetch(`https://planificador-parvulos.azurewebsites.net/api/${endpoint}`, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({form, ai: aiData})
