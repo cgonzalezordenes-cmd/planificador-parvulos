@@ -1,451 +1,570 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Planificador Parvularia — Medio Menor</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; color: #1a1a2e; min-height: 100vh; }
-  header { background: #185FA5; color: white; padding: 18px 32px; }
-  header h1 { font-size: 18px; font-weight: 600; }
-  header p  { font-size: 12px; opacity: 0.8; margin-top: 2px; }
-  .container { max-width: 960px; margin: 32px auto; padding: 0 20px; }
-  .card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 24px; margin-bottom: 20px; }
-  .card h2 { font-size: 13px; font-weight: 600; color: #185FA5; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; }
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .field { display: flex; flex-direction: column; gap: 5px; }
-  .field label { font-size: 12px; color: #64748b; font-weight: 500; }
-  .field input, .field select { padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; color: #1a1a2e; background: #f8fafc; }
-  .field input:focus, .field select:focus { outline: none; border-color: #185FA5; background: white; }
-  .day-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
-  .day-tab { padding: 7px 18px; border-radius: 20px; border: 1px solid #cbd5e1; font-size: 13px; cursor: pointer; background: white; color: #64748b; transition: all 0.2s; }
-  .day-tab.active { background: #185FA5; color: white; border-color: #185FA5; }
-  .day-panel { display: none; }
-  .day-panel.active { display: block; }
-  .oa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-  .oa-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer; background: #f8fafc; transition: all 0.2s; }
-  .oa-item:hover { border-color: #185FA5; background: #EFF6FF; }
-  .oa-item.selected { border-color: #185FA5; background: #EFF6FF; }
-  .oa-item input[type=radio] { margin-top: 2px; flex-shrink: 0; accent-color: #185FA5; }
-  .oa-label { font-size: 12px; line-height: 1.4; color: #334155; }
-  .oa-num { font-size: 11px; font-weight: 600; color: #185FA5; white-space: nowrap; }
-  .section-title { font-size: 12px; font-weight: 600; color: #475569; margin: 14px 0 8px; text-transform: uppercase; letter-spacing: 0.4px; }
-  .nucleo-header { grid-column: 1 / -1; font-size: 11px; font-weight: 600; color: #1D9E75; margin-top: 6px; }
-  .btn { padding: 11px 20px; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 7px; }
-  .btn-primary { background: #185FA5; color: white; width: 100%; justify-content: center; }
-  .btn-primary:hover { background: #0C447C; }
-  .btn-green  { background: #1D9E75; color: white; }
-  .btn-green:hover  { background: #0F6E56; }
-  .btn-purple { background: #534AB7; color: white; }
-  .btn-purple:hover { background: #3C3489; }
-  .btn:disabled { background: #94a3b8; cursor: not-allowed; }
-  .btn-row { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
-  .status { margin-top: 14px; padding: 13px 16px; border-radius: 10px; font-size: 13px; display: none; }
-  .status.loading { background: #EFF6FF; color: #185FA5; border: 1px solid #B5D4F4; display: block; }
-  .status.error   { background: #FEF2F2; color: #A32D2D; border: 1px solid #F7C1C1; display: block; }
-  .status.success { background: #E1F5EE; color: #085041; border: 1px solid #9FE1CB; display: block; }
-  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #B5D4F4; border-top-color: #185FA5; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 6px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .preview-card { background: white; border-radius: 12px; border: 2px solid #1D9E75; padding: 24px; margin-bottom: 20px; display: none; }
-  .preview-card h2 { font-size: 14px; font-weight: 600; color: #1D9E75; margin-bottom: 16px; }
-  .preview-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
-  .preview-tab { padding: 5px 14px; border-radius: 16px; border: 1px solid #cbd5e1; font-size: 12px; cursor: pointer; background: white; color: #64748b; }
-  .preview-tab.active { background: #1D9E75; color: white; border-color: #1D9E75; }
-  .preview-panel { display: none; }
-  .preview-panel.active { display: block; }
-  .preview-day { border-left: 3px solid #ADDB7B; padding-left: 14px; }
-  .preview-day h3 { font-size: 13px; font-weight: 600; color: #185FA5; margin-bottom: 8px; }
-  .preview-field { margin-bottom: 6px; font-size: 12px; line-height: 1.6; }
-  .preview-field strong { color: #334155; }
-  .familia-block { padding: 8px 10px; background: #E1F5EE; border-radius: 6px; margin-bottom: 4px; font-size: 12px; line-height: 1.6; }
-</style>
-</head>
-<body>
+import logging
+import json
+import os
+import io
+import re
 
-<header>
-  <h1>Planificador para Giovanna Marino</h1>
-  <p>Educación Parvularia · Nivel Medio Menor · </p>
-</header>
+import azure.functions as func
+from docx import Document
+from docx.shared import Pt, RGBColor, Cm
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml.ns import qn
+from docx.oxml import parse_xml
+from docx.enum.section import WD_ORIENT
+from groq import Groq
 
-<div class="container">
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
-  <div class="card">
-    <h2>Datos generales</h2>
-    <div class="grid-2">
-      <div class="field"><label>Educadora</label><input type="text" id="educadora" value="Giovanna Marino" /></div>
-      <div class="field"><label>Técnicos</label><input type="text" id="tecnicos" value="Carol Miranda – Helen Oyarzún" /></div>
-    </div>
-  </div>
+# ═══════════════════════════════════════════════════════
+# PROMPTS
+# ═══════════════════════════════════════════════════════
 
-  <div class="card">
-    <h2>Semana a planificar</h2>
-    <div class="grid-2">
-      <div class="field"><label>Desde (Lunes)</label><input type="date" id="fecha-inicio" /></div>
-      <div class="field"><label>Hasta (Viernes)</label><input type="date" id="fecha-fin" /></div>
-    </div>
-  </div>
+SYSTEM_PROMPT = """Eres una experta en Educación Parvularia chilena. Generas planificaciones semanales co-construidas y diversificadas para Nivel Medio Menor (3 años) siguiendo las Bases Curriculares de Educación Parvularia 2018.
 
-  <div class="card">
-    <h2>Planificación por día</h2>
-    <div class="day-tabs">
-      <div class="day-tab active" onclick="showDay(0)">Lunes</div>
-      <div class="day-tab" onclick="showDay(1)">Martes</div>
-      <div class="day-tab" onclick="showDay(2)">Miércoles</div>
-      <div class="day-tab" onclick="showDay(3)">Jueves</div>
-      <div class="day-tab" onclick="showDay(4)">Viernes</div>
-    </div>
-    <div id="dias-container"></div>
-  </div>
-
-  <div class="card">
-    <h2>Paso 1 — Generar contenido</h2>
-    <button class="btn btn-primary" onclick="generarPreview()" id="btn-gen">
-      Generar planificación con IA
-    </button>
-    <div class="status" id="status-gen"></div>
-  </div>
-
-  <div class="preview-card" id="preview-card">
-    <h2>Vista previa — Revisa el contenido antes de descargar</h2>
-    <div class="preview-tabs" id="preview-tabs"></div>
-    <div id="preview-panels"></div>
-    <div style="border-top:1px solid #e2e8f0; padding-top:16px; margin-top:8px;">
-      <p style="font-size:12px;color:#64748b;margin-bottom:4px;">Paso 2 — Descarga los documentos</p>
-      <div class="btn-row">
-        <button class="btn btn-green"  onclick="descargarDocx('planificacion')" id="btn-plan">
-          Descargar Planificación .docx
-        </button>
-        <button class="btn btn-purple" onclick="descargarDocx('familia')" id="btn-fam">
-          Descargar Info Familia .docx
-        </button>
-      </div>
-      <div class="status" id="status-dl"></div>
-    </div>
-  </div>
-
-</div>
-
-<script>
-const API = 'https://planificador-parvulos.azurewebsites.net/api';
-
-const OA_BANK = {
-  DPS: {
-    "Identidad y Autonomía": [
-      {num:"OA 1", texto:"Representar verbal y corporalmente diferentes emociones y sentimientos, en sus juegos."},
-      {num:"OA 4", texto:"Manifestar disposición para regular sus emociones en función de las necesidades propias y de los demás."},
-      {num:"OA 5", texto:"Manifestar sus preferencias cuando participa o solicita participar, en diversas situaciones cotidianas y juegos."},
-      {num:"OA 6", texto:"Actuar con progresiva independencia, ampliando su repertorio de acciones acorde a sus necesidades e intereses."},
-      {num:"OA 7", texto:"Comunicar algunos rasgos de su identidad, como su nombre, características corporales, género y otros."},
-      {num:"OA 9", texto:"Manifestar progresiva independencia en prácticas de alimentación, higiene corporal, bucal y evacuación."},
-      {num:"OA 10", texto:"Manifestar satisfacción y confianza por su autovalía, comunicando algunos desafíos alcanzados."},
-    ],
-    "Convivencia y Ciudadanía": [
-      {num:"OA 1", texto:"Participar en actividades y juegos grupales con sus pares, conversando, intercambiando pertenencias, cooperando."},
-      {num:"OA 3", texto:"Colaborar en situaciones cotidianas y de juego, proponiendo acciones simples frente a necesidades de sus pares."},
-      {num:"OA 6", texto:"Manifestar disposición para practicar acuerdos de convivencia básica que regulan situaciones cotidianas."},
-      {num:"OA 8", texto:"Reconocer acciones correctas e incorrectas para la convivencia armónica del grupo."},
-      {num:"OA 10", texto:"Manifestar interés para interactuar con niños y niñas, reconociendo la diversidad de sus características."},
-    ],
-    "Corporalidad y Movimiento": [
-      {num:"OA 2", texto:"Reconocer las principales partes, características físicas de su cuerpo y sus funciones."},
-      {num:"OA 3", texto:"Experimentar diversas posibilidades de acción con su cuerpo."},
-      {num:"OA 5", texto:"Perfeccionar su coordinación visomotriz fina, a través del uso de diversos objetos, juguetes y utensilios."},
-      {num:"OA 6", texto:"Adquirir control y equilibrio en movimientos, posturas y desplazamientos."},
-      {num:"OA 7", texto:"Resolver desafíos prácticos en situaciones cotidianas y juegos, incorporando mayor precisión y coordinación."},
-    ]
-  },
-  CI: {
-    "Lenguaje Verbal": [
-      {num:"OA 1", texto:"Expresarse oralmente, empleando estructuras oracionales simples y respetando patrones gramaticales básicos."},
-      {num:"OA 2", texto:"Comprender mensajes simples como instrucciones explícitas, explicaciones y preguntas."},
-      {num:"OA 4", texto:"Incorporar progresivamente nuevas palabras al comunicar oralmente temas variados de su interés."},
-      {num:"OA 6", texto:"Comprender, a partir de la escucha atenta, contenidos explícitos de textos literarios y no literarios."},
-    ],
-    "Lenguajes Artísticos": [
-      {num:"OA 3", texto:"Interpretar canciones y juegos musicales, experimentando con diversos recursos (voz, cuerpo, instrumentos)."},
-      {num:"OA 4", texto:"Expresar corporalmente sensaciones y emociones experimentando con mímica, juegos teatrales, rondas y danzas."},
-      {num:"OA 5", texto:"Expresar emociones, ideas y experiencias por medio de la plástica experimentando con recursos pictóricos y de modelado."},
-      {num:"OA 7", texto:"Representar a través del dibujo diversos elementos de su entorno, incorporando figuras cerradas y primeros esbozos de la figura humana."},
-    ]
-  },
-  ICE: {
-    "Exploración del Entorno Natural": [
-      {num:"OA 1", texto:"Manifestar interés y asombro por diversos elementos, situaciones y fenómenos del entorno natural."},
-      {num:"OA 2", texto:"Comunicar verbalmente características de elementos y paisajes de su entorno natural."},
-      {num:"OA 4", texto:"Comunicar algunas propiedades básicas de los elementos naturales que explora (colores, texturas, tamaños)."},
-      {num:"OA 5", texto:"Distinguir una variedad de animales y plantas respecto a sus características, necesidades básicas y lugares que habitan."},
-      {num:"OA 6", texto:"Colaborar en acciones que contribuyen al desarrollo de ambientes sostenibles."},
-    ],
-    "Comprensión del Entorno Sociocultural": [
-      {num:"OA 1", texto:"Describir actividades habituales de su comunidad (ir de compras, jugar en la plaza, viajar en bus)."},
-      {num:"OA 4", texto:"Reconocer sucesos significativos de su historia personal y familiar."},
-      {num:"OA 6", texto:"Identificar algunas normas de protección y seguridad de su entorno cotidiano."},
-    ],
-    "Pensamiento Matemático": [
-      {num:"OA 1", texto:"Reproducir patrones sonoros, visuales, gestuales, corporales u otros, de dos o tres elementos."},
-      {num:"OA 5", texto:"Emplear cuantificadores tales como más/menos, mucho/poco, todo/ninguno, al comparar cantidades de objetos."},
-      {num:"OA 6", texto:"Emplear progresivamente los números para contar, identificar, cuantificar y comparar cantidades hasta el 10."},
-    ]
-  }
-};
-
-const OAT_LIST = [
-  {num:"IA OA 4", texto:"Manifestar disposición para regular sus emociones en función de las necesidades propias y de los demás.", nucleo:"Identidad y Autonomía"},
-  {num:"IA OA 5", texto:"Manifestar sus preferencias cuando participa en diversas situaciones cotidianas y juegos.", nucleo:"Identidad y Autonomía"},
-  {num:"CC OA 1", texto:"Participar en actividades y juegos grupales, conversando, intercambiando pertenencias y cooperando.", nucleo:"Convivencia y Ciudadanía"},
-  {num:"CC OA 6", texto:"Manifestar disposición para practicar acuerdos de convivencia básica que regulan situaciones cotidianas.", nucleo:"Convivencia y Ciudadanía"},
-  {num:"CC OA 8", texto:"Reconocer acciones correctas e incorrectas para la convivencia armónica del grupo.", nucleo:"Convivencia y Ciudadanía"},
-  {num:"CC OA 10", texto:"Manifestar interés para interactuar con niños y niñas, reconociendo la diversidad de sus características.", nucleo:"Convivencia y Ciudadanía"},
-  {num:"CM OA 3", texto:"Experimentar diversas posibilidades de acción con su cuerpo.", nucleo:"Corporalidad y Movimiento"},
-];
-
-const DIAS      = ['Lunes','Martes','Miércoles','Jueves','Viernes'];
-const DIAS_KEYS = ['lunes','martes','miercoles','jueves','viernes'];
-const AMBITOS   = {DPS:'Desarrollo Personal y Social', CI:'Comunicación Integral', ICE:'Interacción y Comprensión del Entorno'};
-
-let selectedOA = [null,null,null,null,null];
-let selectedOAT= [null,null,null,null,null];
-let aiData     = null;
-
-function buildDayPanels() {
-  const container = document.getElementById('dias-container');
-  DIAS.forEach((nombre, i) => {
-    const panel = document.createElement('div');
-    panel.className = 'day-panel' + (i === 0 ? ' active' : '');
-    panel.id = `panel-${i}`;
-    panel.innerHTML = `
-      <div class="grid-2" style="margin-bottom:12px">
-        <div class="field">
-          <label>Tema del día</label>
-          <input type="text" id="tema-${i}" placeholder="Ej: Hábitos de higiene" oninput="resetPreview()">
-        </div>
-        <div class="field">
-          <label>Ámbito</label>
-          <select id="ambito-${i}" onchange="renderOA(${i}); resetPreview()">
-            <option value="DPS">Desarrollo Personal y Social</option>
-            <option value="CI">Comunicación Integral</option>
-            <option value="ICE">Interacción y Comprensión del Entorno</option>
-          </select>
-        </div>
-      </div>
-      <div class="section-title">OA Principal</div>
-      <div class="oa-grid" id="oa-grid-${i}"></div>
-      <div class="section-title">OAT (Transversal)</div>
-      <div class="oa-grid" id="oat-grid-${i}"></div>`;
-    container.appendChild(panel);
-  });
+Responde SOLO con un objeto JSON válido sin texto adicional, sin bloques de código markdown.
+El JSON debe tener claves: lunes, martes, miercoles, jueves, viernes. Cada una con exactamente estos campos:
+{
+  "titulo_dia": "Lunes 9 de junio: Titulo creativo de la experiencia",
+  "inicio": "Texto del momento de inicio 2-3 oraciones motivadoras con presentacion de materiales en primera persona de la educadora",
+  "escenario_1_titulo": "Titulo descriptivo escenario 1",
+  "escenario_1_desc": "Descripcion detallada con mediacion y cierre 4-5 oraciones",
+  "escenario_2_titulo": "Titulo descriptivo escenario 2",
+  "escenario_2_desc": "Descripcion detallada con mediacion y cierre 4-5 oraciones",
+  "escenario_3_titulo": "Titulo descriptivo escenario 3",
+  "escenario_3_desc": "Descripcion detallada con mediacion y cierre 4-5 oraciones",
+  "materiales_1": "material1, material2, material3, material4",
+  "materiales_2": "material1, material2, material3",
+  "materiales_3": "material1, material2, material3",
+  "que_haran_ninos": "Descripcion breve en 2-3 oraciones de lo que haran los ninos ese dia, lenguaje simple para familias",
+  "que_haran_familias": "Sugerencia concreta de actividad familiar en casa relacionada con el tema, 2-3 oraciones",
+  "que_necesitamos": "Material o preparation que debe enviar la familia, o 'Utilizaremos recursos que se encuentran en el centro educativo.'",
+  "indicador_oa1": "Indicador observable 1 del OA comienza con verbo",
+  "indicador_oa2": "Indicador observable 2 del OA comienza con verbo",
+  "indicador_oat": "Indicador observable del OAT comienza con verbo"
 }
 
-function renderOA(day) {
-  const ambitoKey = document.getElementById(`ambito-${day}`).value;
-  const nucleos   = OA_BANK[ambitoKey];
-  const grid      = document.getElementById(`oa-grid-${day}`);
-  grid.innerHTML  = '';
-  selectedOA[day] = null;
+IMPORTANTE: Usa solo comillas dobles. No uses saltos de linea dentro de los valores. Cada valor debe ser texto continuo en una sola linea."""
 
-  Object.entries(nucleos).forEach(([nucleo, oas]) => {
-    const hdr = document.createElement('div');
-    hdr.className = 'nucleo-header';
-    hdr.textContent = nucleo;
-    grid.appendChild(hdr);
-    oas.forEach(oa => {
-      const item = document.createElement('div');
-      item.className = 'oa-item';
-      item.innerHTML = `<input type="radio" name="oa-${day}" value="${nucleo}||${oa.num}||${oa.texto}">
-        <div><div class="oa-num">${oa.num}</div><div class="oa-label">${oa.texto}</div></div>`;
-      item.querySelector('input').addEventListener('change', function() {
-        grid.querySelectorAll('.oa-item').forEach(el => el.classList.remove('selected'));
-        item.classList.add('selected');
-        const p = this.value.split('||');
-        selectedOA[day] = {nucleo:p[0], num:p[1], texto:p[2]};
-        resetPreview();
-      });
-      grid.appendChild(item);
-    });
-  });
 
-  const oatGrid     = document.getElementById(`oat-grid-${day}`);
-  oatGrid.innerHTML = '';
-  selectedOAT[day]  = null;
-  OAT_LIST.forEach(oat => {
-    const item = document.createElement('div');
-    item.className = 'oa-item';
-    item.innerHTML = `<input type="radio" name="oat-${day}">
-      <div><div class="oa-num" style="color:#854F0B">${oat.num}</div><div class="oa-label">${oat.texto}</div></div>`;
-    item.querySelector('input').addEventListener('change', () => {
-      oatGrid.querySelectorAll('.oa-item').forEach(el => el.classList.remove('selected'));
-      item.classList.add('selected');
-      selectedOAT[day] = oat;
-      resetPreview();
-    });
-    oatGrid.appendChild(item);
-  });
+def build_prompt(data: dict) -> str:
+    dias_texto = []
+    for dia in data["dias"]:
+        dias_texto.append(f"""{dia['nombre']}:
+- Tema: {dia['tema']}
+- Ambito: {dia['ambito']}
+- Nucleo: {dia['oa']['nucleo']}
+- OA: {dia['oa']['num']} - {dia['oa']['texto']}
+- OAT Ambito: Desarrollo Personal y Social
+- OAT Nucleo: {dia['oat']['nucleo']}
+- OAT: {dia['oat']['num']} - {dia['oat']['texto']}""")
+    return f"""Genera la planificacion semanal completa para Nivel Medio Menor.
+Educadora: {data['educadora']}
+Tecnicos: {data['tecnicos']}
+Semana: {data['fecha_inicio']} al {data['fecha_fin']}
+
+{chr(10).join(dias_texto)}
+
+Genera contenido pedagogico rico y concreto apropiado para ninos de 3 anios.
+IMPORTANTE: Responde SOLO con JSON valido. Sin markdown. Sin saltos de linea dentro de los valores."""
+
+
+# ═══════════════════════════════════════════════════════
+# UTILIDADES
+# ═══════════════════════════════════════════════════════
+
+CORS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, X-Groq-Key"
 }
 
-function showDay(idx) {
-  document.querySelectorAll('.day-tab').forEach((t,i)   => t.classList.toggle('active', i === idx));
-  document.querySelectorAll('.day-panel').forEach((p,i) => p.classList.toggle('active', i === idx));
+COLOR_HEADER = "ADDB7B"
+COLOR_GRAY   = "F2F2F2"
+COLOR_WHITE  = "FFFFFF"
+
+DIAS_KEYS  = ["lunes", "martes", "miercoles", "jueves", "viernes"]
+DIAS_NAMES = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
+ESCALA     = ("Escala de apreciación:\n"
+              "L: Logrado  ML: Medianamente Logrado\n"
+              "IC: Iniciando Conducta  N/O: No observado  A: Ausente")
+ROL_TEXTO  = ("- Los niños/as escogen libremente su lugar de juego y material.\n"
+              "- Los niños y niñas exploran y manipulan el material libremente.\n"
+              "- Participan activamente durante la experiencia de aprendizaje.\n"
+              "- Conversan y comparten sus ideas con sus pares y con los adultos.")
+
+
+def clean_json(raw: str) -> dict:
+    text = raw.strip().replace("```json", "").replace("```", "").strip()
+    match = re.search(r'\{.*\}', text, re.DOTALL)
+    if match:
+        text = match.group()
+
+    result = []
+    in_string = False
+    escape = False
+    for ch in text:
+        if escape:
+            result.append(ch)
+            escape = False
+        elif ch == '\\':
+            result.append(ch)
+            escape = True
+        elif ch == '"':
+            in_string = not in_string
+            result.append(ch)
+        elif in_string:
+            if ch in ('\n', '\r'):
+                result.append(' ')
+            elif ch == '\t':
+                result.append(' ')
+            elif ord(ch) < 0x20:
+                pass
+            else:
+                result.append(ch)
+        else:
+            result.append(ch)
+
+    return json.loads(''.join(result))
+
+
+def set_cell_bg(cell, hex_color: str):
+    shading = parse_xml(
+        f'<w:shd xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
+        f'w:val="clear" w:color="auto" w:fill="{hex_color}"/>'
+    )
+    cell._tc.get_or_add_tcPr().append(shading)
+
+
+def cell_write(cell, text, bold=False, size=9, align=WD_ALIGN_PARAGRAPH.LEFT):
+    cell.paragraphs[0].clear()
+    para = cell.paragraphs[0]
+    para.alignment = align
+    run = para.add_run(text)
+    run.bold = bold
+    run.font.size = Pt(size)
+    return para
+
+
+def cell_add(cell, text, bold=False, size=9, align=WD_ALIGN_PARAGRAPH.LEFT):
+    para = cell.add_paragraph()
+    para.alignment = align
+    run = para.add_run(text)
+    run.bold = bold
+    run.font.size = Pt(size)
+    return para
+
+
+def call_groq(groq_key: str, body: dict) -> dict:
+    client = Groq(api_key=groq_key)
+    resp   = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        max_tokens=6000,
+        temperature=0.7,
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user",   "content": build_prompt(body)}
+        ]
+    )
+    return clean_json(resp.choices[0].message.content)
+
+
+# ═══════════════════════════════════════════════════════
+# BUILDER PLANIFICACIÓN
+# ═══════════════════════════════════════════════════════
+
+def build_planificacion(data: dict, ai: dict) -> bytes:
+    doc = Document()
+    section = doc.sections[0]
+    section.orientation   = WD_ORIENT.LANDSCAPE
+    section.page_width    = Cm(27.94)
+    section.page_height   = Cm(21.59)
+    section.top_margin    = Cm(1.27)
+    section.bottom_margin = Cm(1.27)
+    section.left_margin   = Cm(1.27)
+    section.right_margin  = Cm(1.27)
+
+    title_p = doc.add_paragraph()
+    title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r = title_p.add_run("PLANIFICACIÓN CO-CONSTRUIDA Y DIVERSIFICADA")
+    r.bold = True; r.font.size = Pt(13)
+
+    info1 = doc.add_paragraph()
+    r = info1.add_run("\tNivel: "); r.bold = True; r.font.size = Pt(11)
+    info1.add_run("Medio Menor").font.size = Pt(11)
+    r2 = info1.add_run("                                                 Fecha: ")
+    r2.bold = True; r2.font.size = Pt(11)
+    info1.add_run(f"{data['fecha_inicio']} al {data['fecha_fin']}").font.size = Pt(11)
+
+    info2 = doc.add_paragraph()
+    r3 = info2.add_run("\tEducadora: "); r3.bold = True; r3.font.size = Pt(11)
+    info2.add_run(data['educadora']).font.size = Pt(11)
+    r4 = info2.add_run("                                 Técnicos: ")
+    r4.bold = True; r4.font.size = Pt(11)
+    info2.add_run(data['tecnicos']).font.size = Pt(11)
+
+    doc.add_paragraph()
+
+    C = [Cm(3.74), Cm(4.78), Cm(9.21), Cm(9.21), Cm(7.79), Cm(7.79), Cm(7.79)]
+    table = doc.add_table(rows=13, cols=7)
+    table.style = "Table Grid"
+    for row in table.rows:
+        for i, cell in enumerate(row.cells):
+            cell.width = C[i]
+
+    # FILA 0 — Header OA
+    r0 = table.rows[0]
+    for i in range(7):
+        set_cell_bg(r0.cells[i], COLOR_HEADER)
+    cell_write(r0.cells[0], "ÁMBITO", bold=True, size=9, align=WD_ALIGN_PARAGRAPH.CENTER)
+    cell_write(r0.cells[1], "NÚCLEO", bold=True, size=9, align=WD_ALIGN_PARAGRAPH.CENTER)
+    oa_hdr = r0.cells[2].merge(r0.cells[3])
+    set_cell_bg(oa_hdr, COLOR_HEADER)
+    cell_write(oa_hdr, "OBJETIVO DE APRENDIZAJE", bold=True, size=9, align=WD_ALIGN_PARAGRAPH.CENTER)
+    oat_hdr = r0.cells[4].merge(r0.cells[5]).merge(r0.cells[6])
+    set_cell_bg(oat_hdr, COLOR_HEADER)
+    cell_write(oat_hdr, "OBJETIVO DE APRENDIZAJE TRANSVERSAL", bold=True, size=9, align=WD_ALIGN_PARAGRAPH.CENTER)
+
+    # FILAS 1-5 — OA por día
+    for idx, key in enumerate(DIAS_KEYS):
+        fd  = data["dias"][idx]
+        row = table.rows[idx + 1]
+
+        c0 = row.cells[0]
+        c0.paragraphs[0].clear()
+        rb = c0.paragraphs[0].add_run(f"{DIAS_NAMES[idx]}: ")
+        rb.bold = True; rb.font.size = Pt(9)
+        c0.paragraphs[0].add_run(fd["ambito"]).font.size = Pt(9)
+
+        cell_write(row.cells[1], fd["oa"]["nucleo"], size=9)
+
+        oa_c = row.cells[2].merge(row.cells[3])
+        cell_write(oa_c, f"{fd['oa']['num']}: {fd['oa']['texto']}", size=9)
+
+        oat_c = row.cells[4].merge(row.cells[5]).merge(row.cells[6])
+        oat_c.paragraphs[0].clear()
+        ra = oat_c.paragraphs[0].add_run("Ámbito: ")
+        ra.bold = True; ra.font.size = Pt(9)
+        oat_c.paragraphs[0].add_run("Desarrollo Personal y Social").font.size = Pt(9)
+        pn = oat_c.add_paragraph()
+        rn = pn.add_run("Núcleo: "); rn.bold = True; rn.font.size = Pt(9)
+        pn.add_run(fd["oat"]["nucleo"]).font.size = Pt(9)
+        po = oat_c.add_paragraph()
+        ro = po.add_run(f"{fd['oat']['num']}: "); ro.bold = True; ro.font.size = Pt(9)
+        po.add_run(fd["oat"]["texto"]).font.size = Pt(9)
+
+    # FILA 6 — Header metodología
+    r6 = table.rows[6]
+    for i in range(7):
+        set_cell_bg(r6.cells[i], COLOR_HEADER)
+    cell_write(r6.cells[0], "ROL PROTAGÓNICO DEL NIÑO Y LA NIÑA", bold=True, size=9, align=WD_ALIGN_PARAGRAPH.CENTER)
+    met_hdr = r6.cells[1].merge(r6.cells[2])
+    set_cell_bg(met_hdr, COLOR_HEADER)
+    cell_write(met_hdr, "SUGERENCIA METODOLÓGICA", bold=True, size=9, align=WD_ALIGN_PARAGRAPH.CENTER)
+    mat_hdr = r6.cells[3].merge(r6.cells[4])
+    set_cell_bg(mat_hdr, COLOR_HEADER)
+    cell_write(mat_hdr, "RECURSOS/MATERIALES", bold=True, size=9, align=WD_ALIGN_PARAGRAPH.CENTER)
+    cell_write(r6.cells[5], "EVALUACIÓN", bold=True, size=9, align=WD_ALIGN_PARAGRAPH.CENTER)
+    cell_write(r6.cells[6], "PARTICIPACIÓN DE LA FAMILIA", bold=True, size=9, align=WD_ALIGN_PARAGRAPH.CENTER)
+
+    # FILAS 7-11 — Metodología por día
+    for idx, key in enumerate(DIAS_KEYS):
+        fd  = data["dias"][idx]
+        aid = ai.get(key, {})
+        row = table.rows[idx + 7]
+
+        c0 = row.cells[0]
+        c0.paragraphs[0].clear()
+        for i, line in enumerate(ROL_TEXTO.split("\n")):
+            p = c0.paragraphs[0] if i == 0 else c0.add_paragraph()
+            p.add_run(line).font.size = Pt(9)
+
+        mc = row.cells[1].merge(row.cells[2])
+        mc.paragraphs[0].clear()
+        rt = mc.paragraphs[0].add_run(aid.get("titulo_dia", f"{DIAS_NAMES[idx]}: {fd['tema']}"))
+        rt.bold = True; rt.font.size = Pt(9)
+        p_ini = mc.add_paragraph()
+        ri = p_ini.add_run("Inicio: "); ri.bold = True; ri.font.size = Pt(9)
+        p_ini.add_run(aid.get("inicio", "")).font.size = Pt(9)
+        for s in ["1","2","3"]:
+            pe = mc.add_paragraph()
+            re_r = pe.add_run(f"Escenario {s}: {aid.get(f'escenario_{s}_titulo','')}")
+            re_r.bold = True; re_r.font.size = Pt(9)
+            pd = mc.add_paragraph()
+            pd.add_run(aid.get(f"escenario_{s}_desc","")).font.size = Pt(9)
+
+        matc = row.cells[3].merge(row.cells[4])
+        matc.paragraphs[0].clear()
+        first = True
+        for s in ["1","2","3"]:
+            p_sh = matc.paragraphs[0] if first else matc.add_paragraph()
+            first = False
+            rsh = p_sh.add_run(f"Escenario {s}:"); rsh.bold = True; rsh.font.size = Pt(9)
+            for mat in [m.strip() for m in aid.get(f"materiales_{s}","").split(",") if m.strip()]:
+                matc.add_paragraph().add_run(f"- {mat}").font.size = Pt(9)
+
+        evc = row.cells[5]
+        evc.paragraphs[0].clear()
+        evc.paragraphs[0].add_run(ESCALA).font.size = Pt(8)
+        ph = evc.add_paragraph()
+        ph.add_run("Indicadores OA (Niños y Niñas):").bold = True
+        ph.runs[0].font.size = Pt(9)
+        for n, field in [("1","indicador_oa1"),("2","indicador_oa2")]:
+            evc.add_paragraph().add_run(f"{n}. {aid.get(field,'')}").font.size = Pt(9)
+        poh = evc.add_paragraph()
+        poh.add_run("Indicador OAT:").bold = True
+        poh.runs[0].font.size = Pt(9)
+        evc.add_paragraph().add_run(f"1. {aid.get('indicador_oat','')}").font.size = Pt(9)
+
+        famc = row.cells[6]
+        famc.paragraphs[0].clear()
+        famc.paragraphs[0].add_run(aid.get("que_haran_familias","")).font.size = Pt(9)
+
+    # FILA 12 — Observación
+    r12 = table.rows[12]
+    obs = r12.cells[0]
+    for i in range(1, 7):
+        obs = obs.merge(r12.cells[i])
+    obs.paragraphs[0].clear()
+    ro = obs.paragraphs[0].add_run("Observación:     ")
+    ro.bold = True; ro.font.size = Pt(9)
+
+    buf = io.BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+    return buf.read()
+
+
+# ═══════════════════════════════════════════════════════
+# BUILDER INFO FAMILIA
+# ═══════════════════════════════════════════════════════
+
+def build_info_familia(data: dict, ai: dict) -> bytes:
+    doc = Document()
+    section = doc.sections[0]
+    section.orientation   = WD_ORIENT.LANDSCAPE
+    section.page_width    = Cm(27.94)
+    section.page_height   = Cm(21.59)
+    section.top_margin    = Cm(2.25)
+    section.bottom_margin = Cm(2.50)
+    section.left_margin   = Cm(2.50)
+    section.right_margin  = Cm(2.50)
+
+    # Título
+    title_p = doc.add_paragraph()
+    title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    rt = title_p.add_run(f'"Organizando mi semana del {data["fecha_inicio"]} al {data["fecha_fin"]}"')
+    rt.bold = True; rt.font.size = Pt(12)
+
+    sub_p = doc.add_paragraph()
+    sub_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    sub_p.add_run("Medio Menor 2026").font.size = Pt(12)
+
+    doc.add_paragraph()
+
+    # Tabla 4 filas x 5 columnas
+    table = doc.add_table(rows=4, cols=5)
+    table.style = "Table Grid"
+
+    col_w = Cm(3.74)
+    for row in table.rows:
+        for cell in row.cells:
+            cell.width = col_w
+
+    # Extraer números de días desde las fechas
+    from datetime import datetime, timedelta
+    try:
+        fecha_ini = datetime.strptime(data["fecha_inicio"], "%Y-%m-%d")
+        fechas = [(fecha_ini + timedelta(days=i)) for i in range(5)]
+        dias_labels = [f"{DIAS_NAMES[i].upper()} {fechas[i].day}" for i in range(5)]
+    except Exception:
+        dias_labels = [f"{n.upper()}" for n in DIAS_NAMES]
+
+    # FILA 0 — Header días (verde)
+    for i, label in enumerate(dias_labels):
+        cell = table.rows[0].cells[i]
+        set_cell_bg(cell, COLOR_HEADER)
+        cell_write(cell, label, bold=True, size=11, align=WD_ALIGN_PARAGRAPH.CENTER)
+
+    # FILA 1 — ¿Qué harán los niños/as?
+    for i, key in enumerate(DIAS_KEYS):
+        aid  = ai.get(key, {})
+        cell = table.rows[1].cells[i]
+        set_cell_bg(cell, COLOR_GRAY)
+        cell.paragraphs[0].clear()
+        rl = cell.paragraphs[0].add_run("¿Qué harán los niños/as? ")
+        rl.bold = True; rl.font.size = Pt(9)
+        cell.paragraphs[0].add_run(aid.get("que_haran_ninos","")).font.size = Pt(9)
+
+    # FILA 2 — ¿Qué harán las familias?
+    for i, key in enumerate(DIAS_KEYS):
+        aid  = ai.get(key, {})
+        cell = table.rows[2].cells[i]
+        set_cell_bg(cell, COLOR_GRAY)
+        cell.paragraphs[0].clear()
+        rl = cell.paragraphs[0].add_run("¿Qué harán las familias? ")
+        rl.bold = True; rl.font.size = Pt(9)
+        cell.paragraphs[0].add_run(aid.get("que_haran_familias","")).font.size = Pt(9)
+
+    # FILA 3 — ¿Qué necesitamos?
+    for i, key in enumerate(DIAS_KEYS):
+        aid  = ai.get(key, {})
+        cell = table.rows[3].cells[i]
+        set_cell_bg(cell, COLOR_GRAY)
+        cell.paragraphs[0].clear()
+        rl = cell.paragraphs[0].add_run("¿Qué necesitamos? ")
+        rl.bold = True; rl.font.size = Pt(9)
+        necesitamos = aid.get("que_necesitamos",
+                              "Utilizaremos recursos que se encuentran en el centro educativo.")
+        cell.paragraphs[0].add_run(necesitamos).font.size = Pt(9)
+
+    buf = io.BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+    return buf.read()
+
+
+# ═══════════════════════════════════════════════════════
+# ENDPOINTS
+# ═══════════════════════════════════════════════════════
+
+@app.route(route="generate", methods=["GET","POST","OPTIONS"])
+def generate(req: func.HttpRequest) -> func.HttpResponse:
+    """Genera y devuelve el JSON con el contenido para preview."""
+    if req.method == "OPTIONS":
+        return func.HttpResponse(status_code=200, headers=CORS)
+
+    try:
+        body = req.get_json()
+    except Exception:
+        return func.HttpResponse("Body JSON invalido", status_code=400, headers=CORS)
+
+    groq_key = req.headers.get("X-Groq-Key") or os.environ.get("GROQ_API_KEY","")
+    if not groq_key:
+        return func.HttpResponse("Falta Groq API Key", status_code=401, headers=CORS)
+
+    try:
+        ai_data = call_groq(groq_key, body)
+    except Exception as e:
+        logging.error(f"Groq/JSON error: {e}")
+        return func.HttpResponse(f"Error generando contenido: {e}", status_code=500, headers=CORS)
+
+    out_hdrs = {**CORS, "Content-Type": "application/json"}
+    return func.HttpResponse(
+        body=json.dumps({"ok": True, "data": ai_data}, ensure_ascii=False),
+        status_code=200,
+        headers=out_hdrs
+    )
+
+
+@app.route(route="download-planificacion", methods=["POST","OPTIONS"])
+def download_planificacion(req: func.HttpRequest) -> func.HttpResponse:
+    """Recibe form data + ai_data y devuelve el .docx de planificación."""
+    if req.method == "OPTIONS":
+        return func.HttpResponse(status_code=200, headers=CORS)
+
+    try:
+        body = req.get_json()
+    except Exception:
+        return func.HttpResponse("Body JSON invalido", status_code=400, headers=CORS)
+
+    try:
+        docx_bytes = build_planificacion(body["form"], body["ai"])
+    except Exception as e:
+        logging.error(f"DOCX planificacion error: {e}")
+        return func.HttpResponse(f"Error generando planificacion: {e}", status_code=500, headers=CORS)
+
+    fecha    = body["form"].get("fecha_inicio","semana")
+    out_hdrs = {**CORS,
+                "Content-Disposition": f'attachment; filename="Planificacion_{fecha}.docx"'}
+    return func.HttpResponse(
+        body=docx_bytes, status_code=200,
+        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers=out_hdrs
+    )
+
+
+@app.route(route="download-familia", methods=["POST","OPTIONS"])
+def download_familia(req: func.HttpRequest) -> func.HttpResponse:
+    """Recibe form data + ai_data y devuelve el .docx de info familia."""
+    if req.method == "OPTIONS":
+        return func.HttpResponse(status_code=200, headers=CORS)
+
+    try:
+        body = req.get_json()
+    except Exception:
+        return func.HttpResponse("Body JSON invalido", status_code=400, headers=CORS)
+
+    try:
+        docx_bytes = build_info_familia(body["form"], body["ai"])
+    except Exception as e:
+        logging.error(f"DOCX familia error: {e}")
+        return func.HttpResponse(f"Error generando info familia: {e}", status_code=500, headers=CORS)
+
+    fecha    = body["form"].get("fecha_inicio","semana")
+    out_hdrs = {**CORS,
+                "Content-Disposition": f'attachment; filename="InfoFamilia_{fecha}.docx"'}
+    return func.HttpResponse(
+        body=docx_bytes, status_code=200,
+        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers=out_hdrs
+    )
+
+
+# ═══════════════════════════════════════════════════════
+# ENDPOINT: SUGERIR IDEAS
+# ═══════════════════════════════════════════════════════
+
+SUGGEST_PROMPT = """Eres una experta en Educación Parvularia chilena para Nivel Medio Menor (niños de 3 años).
+
+Dado un tema del día, genera exactamente 5 ideas de experiencias de aprendizaje.
+Responde SOLO con JSON válido sin markdown, sin texto adicional.
+Formato:
+{
+  "ideas": [
+    {"titulo": "Título corto de 4-6 palabras", "descripcion": "Descripción de 2-3 oraciones explicando la experiencia, materiales y aprendizaje esperado"},
+    ...5 ideas en total
+  ]
 }
 
-function getFormData() {
-  return {
-    educadora:    document.getElementById('educadora').value,
-    tecnicos:     document.getElementById('tecnicos').value,
-    fecha_inicio: document.getElementById('fecha-inicio').value,
-    fecha_fin:    document.getElementById('fecha-fin').value,
-    dias: DIAS.map((nombre, i) => ({
-      nombre,
-      tema:   document.getElementById(`tema-${i}`).value,
-      ambito: AMBITOS[document.getElementById(`ambito-${i}`).value],
-      oa:     selectedOA[i],
-      oat:    selectedOAT[i]
-    }))
-  };
-}
+IMPORTANTE: Títulos creativos y concretos. Descripciones en lenguaje pedagógico apropiado para párvulos."""
 
-function validate() {
-  const data = getFormData();
-  if (!data.fecha_inicio || !data.fecha_fin) return 'Selecciona las fechas de la semana.';
-  for (let i = 0; i < 5; i++) {
-    if (!data.dias[i].tema)  return `Falta el tema del ${DIAS[i]}.`;
-    if (!selectedOA[i])      return `Selecciona un OA para el ${DIAS[i]}.`;
-    if (!selectedOAT[i])     return `Selecciona un OAT para el ${DIAS[i]}.`;
-  }
-  return null;
-}
 
-function resetPreview() {
-  aiData = null;
-  document.getElementById('preview-card').style.display = 'none';
-}
+@app.route(route="suggest-ideas", methods=["POST","OPTIONS"])
+def suggest_ideas(req: func.HttpRequest) -> func.HttpResponse:
+    if req.method == "OPTIONS":
+        return func.HttpResponse(status_code=200, headers=CORS)
 
-async function generarPreview() {
-  const err = validate();
-  if (err) { showStatus('status-gen','error', err); return; }
+    try:
+        body = req.get_json()
+    except Exception:
+        return func.HttpResponse("Body JSON invalido", status_code=400, headers=CORS)
 
-  const form = getFormData();
-  document.getElementById('btn-gen').disabled = true;
-  showStatus('status-gen','loading','<span class="spinner"></span> Generando contenido con IA... esto toma unos segundos.');
-  document.getElementById('preview-card').style.display = 'none';
+    tema = body.get("tema", "")
+    dia  = body.get("dia", "")
+    groq_key = os.environ.get("GROQ_API_KEY", "")
 
-  try {
-    const res = await fetch(`${API}/generate`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(form)
-    });
-    if (!res.ok) throw new Error(await res.text());
-    const json = await res.json();
-    aiData = json.data;
-    renderPreview(form, aiData);
-    showStatus('status-gen','success','Contenido generado. Revisa la vista previa y descarga los documentos.');
-  } catch(e) {
-    showStatus('status-gen','error','Error: ' + e.message);
-  } finally {
-    document.getElementById('btn-gen').disabled = false;
-  }
-}
+    if not groq_key:
+        return func.HttpResponse("Falta GROQ_API_KEY", status_code=401, headers=CORS)
 
-function renderPreview(form, ai) {
-  const card    = document.getElementById('preview-card');
-  const tabsEl  = document.getElementById('preview-tabs');
-  const panelEl = document.getElementById('preview-panels');
-  tabsEl.innerHTML  = '';
-  panelEl.innerHTML = '';
+    try:
+        client = Groq(api_key=groq_key)
+        resp   = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            max_tokens=1000,
+            temperature=0.8,
+            messages=[
+                {"role": "system", "content": SUGGEST_PROMPT},
+                {"role": "user",   "content": f"Día: {dia}\nTema: {tema}\n\nGenera 5 ideas de experiencias de aprendizaje para niños de 3 años."}
+            ]
+        )
+        ideas_data = clean_json(resp.choices[0].message.content)
+    except Exception as e:
+        logging.error(f"Groq suggest error: {e}")
+        return func.HttpResponse(f"Error generando ideas: {e}", status_code=500, headers=CORS)
 
-  DIAS.forEach((nombre, i) => {
-    const key = DIAS_KEYS[i];
-    const d   = ai[key] || {};
-    const fd  = form.dias[i];
-
-    const tab = document.createElement('div');
-    tab.className = 'preview-tab' + (i === 0 ? ' active' : '');
-    tab.textContent = nombre;
-    tab.onclick = () => {
-      tabsEl.querySelectorAll('.preview-tab').forEach((t,j)   => t.classList.toggle('active', j === i));
-      panelEl.querySelectorAll('.preview-panel').forEach((p,j) => p.classList.toggle('active', j === i));
-    };
-    tabsEl.appendChild(tab);
-
-    const panel = document.createElement('div');
-    panel.className = 'preview-panel' + (i === 0 ? ' active' : '');
-    panel.innerHTML = `
-      <div class="preview-day">
-        <h3>${d.titulo_dia || nombre + ': ' + fd.tema}</h3>
-        <div class="preview-field"><strong>OA:</strong> ${fd.oa?.num} — ${fd.oa?.texto}</div>
-        <div class="preview-field"><strong>OAT:</strong> ${fd.oat?.num} — ${fd.oat?.texto}</div>
-        <div class="preview-field" style="margin-top:8px"><strong>Inicio:</strong> ${d.inicio||''}</div>
-        <div class="preview-field"><strong>E1 — ${d.escenario_1_titulo||''}:</strong> ${d.escenario_1_desc||''}</div>
-        <div class="preview-field"><strong>E2 — ${d.escenario_2_titulo||''}:</strong> ${d.escenario_2_desc||''}</div>
-        <div class="preview-field"><strong>E3 — ${d.escenario_3_titulo||''}:</strong> ${d.escenario_3_desc||''}</div>
-        <div class="preview-field" style="margin-top:8px"><strong>Ind. OA 1:</strong> ${d.indicador_oa1||''}</div>
-        <div class="preview-field"><strong>Ind. OA 2:</strong> ${d.indicador_oa2||''}</div>
-        <div class="preview-field"><strong>Ind. OAT:</strong> ${d.indicador_oat||''}</div>
-        <div style="margin-top:10px">
-          <div class="familia-block"><strong>¿Qué harán los niños?</strong> ${d.que_haran_ninos||''}</div>
-          <div class="familia-block"><strong>¿Qué harán las familias?</strong> ${d.que_haran_familias||''}</div>
-          <div class="familia-block"><strong>¿Qué necesitamos?</strong> ${d.que_necesitamos||''}</div>
-        </div>
-      </div>`;
-    panelEl.appendChild(panel);
-  });
-
-  card.style.display = 'block';
-  card.scrollIntoView({behavior:'smooth', block:'start'});
-}
-
-async function descargarDocx(tipo) {
-  if (!aiData) { showStatus('status-dl','error','Primero genera el contenido.'); return; }
-
-  const form     = getFormData();
-  const btnId    = tipo === 'planificacion' ? 'btn-plan' : 'btn-fam';
-  const endpoint = tipo === 'planificacion' ? 'download-planificacion' : 'download-familia';
-  const filename = tipo === 'planificacion'
-    ? `Planificacion_${form.fecha_inicio}.docx`
-    : `InfoFamilia_${form.fecha_inicio}.docx`;
-
-  document.getElementById(btnId).disabled = true;
-  showStatus('status-dl','loading',`<span class="spinner"></span> Generando ${tipo === 'planificacion' ? 'planificación' : 'info familia'}...`);
-
-  try {
-    const res = await fetch(`${API}/${endpoint}`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({form, ai: aiData})
-    });
-    if (!res.ok) throw new Error(await res.text());
-
-    const blob = await res.blob();
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href = url; a.download = filename; a.click();
-    URL.revokeObjectURL(url);
-    showStatus('status-dl','success',`${filename} descargado correctamente.`);
-  } catch(e) {
-    showStatus('status-dl','error','Error: ' + e.message);
-  } finally {
-    document.getElementById(btnId).disabled = false;
-  }
-}
-
-function showStatus(id, type, msg) {
-  const el = document.getElementById(id);
-  el.className = `status ${type}`;
-  el.innerHTML = msg;
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  buildDayPanels();
-  [0,1,2,3,4].forEach(i => renderOA(i));
-  const hoy     = new Date();
-  const lunes   = new Date(hoy);
-  lunes.setDate(hoy.getDate() - hoy.getDay() + 1);
-  const viernes = new Date(lunes);
-  viernes.setDate(lunes.getDate() + 4);
-  document.getElementById('fecha-inicio').value = lunes.toISOString().split('T')[0];
-  document.getElementById('fecha-fin').value    = viernes.toISOString().split('T')[0];
-});
-</script>
-</body>
-</html>
+    out_hdrs = {**CORS, "Content-Type": "application/json"}
+    return func.HttpResponse(
+        body=json.dumps(ideas_data, ensure_ascii=False),
+        status_code=200,
+        headers=out_hdrs
+    )
