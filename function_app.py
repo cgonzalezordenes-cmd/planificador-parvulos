@@ -508,3 +508,63 @@ def download_familia(req: func.HttpRequest) -> func.HttpResponse:
         mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         headers=out_hdrs
     )
+
+
+# ═══════════════════════════════════════════════════════
+# ENDPOINT: SUGERIR IDEAS
+# ═══════════════════════════════════════════════════════
+
+SUGGEST_PROMPT = """Eres una experta en Educación Parvularia chilena para Nivel Medio Menor (niños de 3 años).
+
+Dado un tema del día, genera exactamente 5 ideas de experiencias de aprendizaje.
+Responde SOLO con JSON válido sin markdown, sin texto adicional.
+Formato:
+{
+  "ideas": [
+    {"titulo": "Título corto de 4-6 palabras", "descripcion": "Descripción de 2-3 oraciones explicando la experiencia, materiales y aprendizaje esperado"},
+    ...5 ideas en total
+  ]
+}
+
+IMPORTANTE: Títulos creativos y concretos. Descripciones en lenguaje pedagógico apropiado para párvulos."""
+
+
+@app.route(route="suggest-ideas", methods=["POST","OPTIONS"])
+def suggest_ideas(req: func.HttpRequest) -> func.HttpResponse:
+    if req.method == "OPTIONS":
+        return func.HttpResponse(status_code=200, headers=CORS)
+
+    try:
+        body = req.get_json()
+    except Exception:
+        return func.HttpResponse("Body JSON invalido", status_code=400, headers=CORS)
+
+    tema = body.get("tema", "")
+    dia  = body.get("dia", "")
+    groq_key = os.environ.get("GROQ_API_KEY", "")
+
+    if not groq_key:
+        return func.HttpResponse("Falta GROQ_API_KEY", status_code=401, headers=CORS)
+
+    try:
+        client = Groq(api_key=groq_key)
+        resp   = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            max_tokens=1000,
+            temperature=0.8,
+            messages=[
+                {"role": "system", "content": SUGGEST_PROMPT},
+                {"role": "user",   "content": f"Día: {dia}\nTema: {tema}\n\nGenera 5 ideas de experiencias de aprendizaje para niños de 3 años."}
+            ]
+        )
+        ideas_data = clean_json(resp.choices[0].message.content)
+    except Exception as e:
+        logging.error(f"Groq suggest error: {e}")
+        return func.HttpResponse(f"Error generando ideas: {e}", status_code=500, headers=CORS)
+
+    out_hdrs = {**CORS, "Content-Type": "application/json"}
+    return func.HttpResponse(
+        body=json.dumps(ideas_data, ensure_ascii=False),
+        status_code=200,
+        headers=out_hdrs
+    )
