@@ -70,6 +70,8 @@ header p  { font-size: 12px; opacity: 0.75; margin-top: 2px; }
 .btn-green:hover   { background: #0F6E56; }
 .btn-purple  { background: #534AB7; color: white; }
 .btn-purple:hover  { background: #3C3489; }
+  .btn-orange  { background: #C05621; color: white; }
+  .btn-orange:hover  { background: #9C4221; }
 .btn:disabled { background: #94a3b8; cursor: not-allowed; }
 
 /* STATUS */
@@ -561,14 +563,17 @@ function renderPreview(form, ai) {
 async function descargar(tipo) {
   if (!aiData) { showStatus('status-dl','error','Primero genera el contenido.'); return; }
   const form     = getFormData();
-  const btnId    = tipo === 'planificacion' ? 'btn-plan' : 'btn-fam';
-  const endpoint = tipo === 'planificacion' ? 'download-planificacion' : 'download-familia';
+  const btnId    = tipo === 'planificacion' ? 'btn-plan' : tipo === 'familia' ? 'btn-fam' : 'btn-eval';
+  const endpoint = tipo === 'planificacion' ? 'download-planificacion' : tipo === 'familia' ? 'download-familia' : 'download-evaluacion';
   const filename = tipo === 'planificacion'
     ? `Planificacion_${form.fecha_inicio}.docx`
-    : `InfoFamilia_${form.fecha_inicio}.docx`;
+    : tipo === 'familia'
+    ? `InfoFamilia_${form.fecha_inicio}.docx`
+    : `Evaluacion_${form.fecha_inicio}.xlsx`;
 
   document.getElementById(btnId).disabled = true;
-  showStatus('status-dl','loading',`<span class="spinner"></span> Generando ${tipo === 'planificacion' ? 'planificación' : 'info familia'}...`);
+  const labels = {planificacion:'planificación', familia:'info familia', evaluacion:'evaluación'};
+  showStatus('status-dl','loading',`<span class="spinner"></span> Generando ${labels[tipo]}...`);
 
   try {
     const res = await fetch(`${API}/${endpoint}`, {

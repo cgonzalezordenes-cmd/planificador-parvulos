@@ -2,3 +2,5 @@ azure-functions
 python-docx
 requests
 groq
+openpyxl
+ 
