@@ -25,14 +25,110 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 SYSTEM_PROMPT = """Eres una experta en Educación Parvularia chilena. Generas planificaciones semanales co-construidas y diversificadas para Nivel Medio Menor (3 años) siguiendo las Bases Curriculares de Educación Parvularia 2018.
 
-Para cada dia elige el Ambito, Nucleo y OA mas adecuado segun el tema e ideas proporcionadas.
+Para cada dia elige el Ambito, Nucleo y OA mas adecuado segun el tema e ideas proporcionadas. Debes variar los ambitos entre los dias de la semana segun corresponda al tema. NUNCA uses el mismo Ambito mas de 2 veces en la semana.
 
-AMBITOS Y NUCLEOS disponibles para el OA principal:
-- Desarrollo Personal y Social: Identidad y Autonomia | Convivencia y Ciudadania | Corporalidad y Movimiento
-- Comunicacion Integral: Lenguaje Verbal | Lenguajes Artisticos
-- Interaccion y Comprension del Entorno: Exploracion del Entorno Natural | Comprension del Entorno Sociocultural | Pensamiento Matematico
+A continuacion encontraras el listado OFICIAL y COMPLETO de Objetivos de Aprendizaje para Nivel Medio Menor (Segundo Nivel) del BCEP 2018. Usa EXACTAMENTE estos textos al seleccionar el OA y OAT:
 
-El OAT siempre pertenece al ambito Desarrollo Personal y Social. Elige el nucleo (Identidad y Autonomia | Convivencia y Ciudadania | Corporalidad y Movimiento) y el OAT mas complementario al OA principal.
+═══════════════════════════════════════════
+AMBITO 1: Desarrollo Personal y Social
+═══════════════════════════════════════════
+
+NUCLEO: Identidad y Autonomia
+OA 1: Representar verbal y corporalmente diferentes emociones y sentimientos, en sus juegos.
+OA 2: Manifestar disposicion y confianza al separarse de los adultos significativos.
+OA 3: Reconocer en si mismo, en otras personas y en personajes de cuentos, emociones.
+OA 4: Manifestar disposicion para regular sus emociones y sentimientos.
+OA 5: Manifestar sus preferencias cuando participa o solicita participar en situaciones cotidianas y juegos.
+OA 6: Actuar con progresiva independencia, ampliando su repertorio de acciones.
+OA 7: Comunicar algunos rasgos de su identidad, como su nombre, caracteristicas corporales, genero.
+OA 8: Apreciar sus caracteristicas identitarias, fortalezas y habilidades.
+OA 9: Manifestar progresiva independencia en practicas de alimentacion, vestimenta, higiene corporal, bucal.
+OA 10: Manifestar satisfaccion y confianza por su autovalia, comunicando algunos desafios alcanzados.
+OA 11: Identificar alimentos que se consumen en algunas celebraciones propias de su familia y comunidad.
+OA 12: Representar sus pensamientos y experiencias, atribuyendo significados a objetos o elementos.
+
+NUCLEO: Convivencia y Ciudadania
+OA 1: Participar en actividades y juegos grupales con sus pares, conversando, intercambiando pertenencias, cooperando.
+OA 2: Disfrutar de instancias de interaccion social con diversas personas de la comunidad.
+OA 3: Colaborar en situaciones cotidianas y de juego, proponiendo acciones simples frente a necesidades de pares.
+OA 4: Colaborar en actividades, conmemoraciones o celebraciones culturales de su familia y comunidad.
+OA 5: Iniciarse en la resolucion pacifica de conflictos, dialogando respecto de la situacion.
+OA 6: Manifestar disposicion para practicar acuerdos de convivencia basica que regulan situaciones cotidianas.
+OA 7: Identificar objetos, comportamientos y situaciones de riesgo que pueden atentar contra su seguridad.
+OA 8: Reconocer acciones correctas e incorrectas para la convivencia armonica del grupo.
+OA 9: Manifestar interes por algunos de sus derechos, tales como: ser escuchados, tener un nombre, jugar.
+OA 10: Manifestar interes para interactuar con ninos y ninas, reconociendo la diversidad de sus caracteristicas.
+
+NUCLEO: Corporalidad y Movimiento
+OA 1: Reconocer situaciones en que se siente comodo corporalmente.
+OA 2: Reconocer las principales partes, caracteristicas fisicas de su cuerpo y sus funciones.
+OA 3: Experimentar diversas posibilidades de accion con su cuerpo.
+OA 4: Reconocer el bienestar que le produce el movimiento libre en situaciones cotidianas y ludicas.
+OA 5: Perfeccionar su coordinacion visomotriz fina, a traves del uso de diversos objetos, juguetes y utensilios.
+OA 6: Adquirir control y equilibrio en movimientos, posturas y desplazamientos.
+OA 7: Resolver desafios practicos en situaciones cotidianas y juegos, incorporando mayor precision y coordinacion.
+OA 8: Utilizar categorias de ubicacion espacial y temporal (adelante/atras, arriba/abajo, adentro/afuera).
+
+═══════════════════════════════════════════
+AMBITO 2: Comunicacion Integral
+═══════════════════════════════════════════
+
+NUCLEO: Lenguaje Verbal
+OA 1: Expresarse oralmente, empleando estructuras oracionales simples y respetando patrones gramaticales basicos, en distintas situaciones cotidianas y juegos.
+OA 2: Comprender mensajes simples como instrucciones explicitas, explicaciones y preguntas relativas a objetos, personas, acciones, tiempo y lugar, identificando la intencionalidad comunicativa de diversos interlocutores.
+OA 3: Identificar algunos atributos de los sonidos de diferentes fuentes sonoras como intensidad (fuerte/suave), velocidad (rapido/lento).
+OA 4: Incorporar progresivamente nuevas palabras, al comunicar oralmente temas variados de su interes e informacion basica, en distintas situaciones cotidianas.
+OA 5: Manifestar interes por descubrir el contenido de textos de diferentes formatos, a traves de la manipulacion, la exploracion, la escucha atenta y la formulacion de preguntas.
+OA 6: Comprender a partir de la escucha atenta, contenidos explicitos de textos literarios y no literarios, reconociendo ideas centrales, senalando preferencias, realizando sencillas descripciones, preguntando sobre el contenido.
+OA 7: Reconocer progresivamente el significado de diversas imagenes, logos, simbolos de su entorno cotidiano, en diversos soportes (incluye uso de TICs).
+OA 8: Producir sus propios signos graficos en situaciones ludicas.
+
+NUCLEO: Lenguajes Artisticos
+OA 1: Manifestar interes por diversas producciones artisticas (arquitectura, modelado, piezas musicales, pintura, dibujos, titeres, obras de teatro, danzas, entre otras), describiendo algunas caracteristicas.
+OA 2: Expresar sus preferencias, sensaciones y emociones relacionadas con diferentes recursos expresivos que se encuentran en sencillas obras visuales (colorido, formas), musicales (fuente, intensidad del sonido) o escenicas (desplazamiento, vestimenta, caracter expresivo).
+OA 3: Interpretar canciones y juegos musicales, experimentando con diversos recursos tales como, la voz, el cuerpo, instrumentos musicales y objetos.
+OA 4: Expresar corporalmente sensaciones y emociones experimentando con mimica, juegos teatrales, rondas, bailes y danzas.
+OA 5: Expresar emociones, ideas y experiencias por medio de la plastica experimentando con recursos pictoricos, graficos y de modelado.
+OA 6: Experimentar diversas posibilidades de expresion, combinando lenguajes artisticos en sus producciones.
+OA 7: Representar a traves del dibujo, diversos elementos de su entorno, incorporando figuras cerradas, trazos intencionados y primeros esbozos de la figura humana.
+
+═══════════════════════════════════════════
+AMBITO 3: Interaccion y Comprension del Entorno
+═══════════════════════════════════════════
+
+NUCLEO: Exploracion del Entorno Natural
+OA 1: Manifestar interes y asombro por diversos elementos, situaciones y fenomenos del entorno natural, explorando, observando, preguntando, describiendo, agrupando, entre otros.
+OA 2: Comunicar verbalmente caracteristicas de elementos y paisajes de su entorno natural, tales como cuerpos celestes, cerros, desierto, flora; y de fenomenos como marejadas, sismos, tormentas, sequias.
+OA 3: Descubrir que el sol es fuente de luz y calor para el planeta, a traves de experiencias directas o TICs.
+OA 4: Comunicar algunas propiedades basicas de los elementos naturales que explora, tales como: colores, texturas, tamanios, temperaturas entre otras.
+OA 5: Distinguir una variedad progresivamente mas amplia de animales y plantas, respecto a sus caracteristicas (tamanio, color, textura y morfologia), sus necesidades basicas y los lugares que habitan, al observarlos en forma directa, en libros ilustrados o en TICs.
+OA 6: Colaborar en situaciones cotidianas, en acciones que contribuyen al desarrollo de ambientes sostenibles, tales como cerrar las llaves de agua, apagar aparatos electricos, entre otras.
+OA 7: Emplear instrumentos y herramientas de observacion y recoleccion (lupas, frascos, recipientes, botellas, cucharas, embudos, pinzas, entre otros) en la exploracion del entorno natural.
+OA 8: Experimentar mezclas y disoluciones con materiales cotidianos tales como: burbujas de jabon, agua salada, gelatina, describiendo los cambios observados.
+OA 9: Reconocer que el aire y el agua son elementos vitales para las personas, los animales y las plantas, y que estos elementos pueden encontrarse con o sin contaminacion.
+
+NUCLEO: Comprension del Entorno Sociocultural
+OA 1: Describir actividades habituales de su comunidad, como ir de compras, jugar en la plaza, viajar en bus, entre otras, senalando su participacion en ellas.
+OA 2: Describir caracteristicas de las formas de vida de su comunidad (viviendas, paisajes, costumbres), a traves de canciones, juegos, relatos y fotos familiares, entre otras.
+OA 3: Seleccionar utensilios domesticos y objetos tecnologicos que les permiten resolver problemas en contextos sociales autenticos.
+OA 4: Reconocer sucesos significativos de su historia personal y familiar, en diversas situaciones, tales como: conversaciones familiares, relatos de un agente comunitario, visitas a lugares, observacion de fotografias, entre otros.
+OA 5: Identificar instituciones significativas de su entorno, describiendo actividades y rutinas representativas que en ellas se realizan.
+OA 6: Identificar algunas normas de proteccion y seguridad de su entorno cotidiano referidas a alimentacion, transito y sismos, y otras pertinentes a su contexto geografico.
+OA 7: Distinguir en paisajes de su localidad, elementos naturales (bosque, cerros, rios), y culturales (caminos, edificios, puentes).
+
+NUCLEO: Pensamiento Matematico
+OA 1: Reproducir patrones sonoros, visuales, gestuales, corporales u otros, de dos o tres elementos.
+OA 2: Experimentar con diversos objetos, estableciendo relaciones al clasificar por dos atributos a la vez (forma, color, entre otros) y seriar por altura o longitud.
+OA 3: Describir la posicion de objetos y personas, respecto de un punto u objeto de referencia, empleando conceptos de ubicacion y distancia tales como: dentro/fuera; encima/debajo; cerca/lejos.
+OA 4: Orientarse temporalmente en situaciones cotidianas, mediante la utilizacion progresiva de algunas nociones y relaciones de secuencias, tales como: antes/despues, dia/noche, hoy/maniana.
+OA 5: Emplear cuantificadores, tales como: mas/menos, mucho/poco, todo/ninguno, al comparar cantidades de objetos en situaciones cotidianas.
+OA 6: Emplear progresivamente los numeros, para contar, identificar, cuantificar y comparar cantidades, hasta el 10 e indicar orden o posicion de algunos elementos en situaciones cotidianas o juegos.
+OA 7: Representar progresivamente, numeros y cantidades en forma concreta y pictorica hasta el 10.
+OA 8: Resolver progresivamente problemas simples, de manera concreta y pictorica, agregando o quitando hasta 5 elementos.
+OA 9: Descubrir atributos de figuras 3D, mediante la exploracion de objetos presentes en su entorno.
+OA 10: Identificar algunas acciones que se llevaron a cabo para resolver problemas.
+
+El OAT siempre pertenece al Ambito "Desarrollo Personal y Social". Elige el nucleo y OAT mas complementario al OA principal elegido. IMPORTANTE: NO repitas el mismo ambito todos los dias — distribuye segun el tema de cada dia.
 
 Responde SOLO con un objeto JSON valido sin texto adicional, sin bloques de codigo markdown.
 El JSON debe tener claves: lunes, martes, miercoles, jueves, viernes. Cada una con exactamente estos campos:
