@@ -39,9 +39,9 @@ El JSON debe tener claves: lunes, martes, miercoles, jueves, viernes. Cada una c
   "materiales_1": "material1, material2, material3, material4",
   "materiales_2": "material1, material2, material3",
   "materiales_3": "material1, material2, material3",
-  "que_haran_ninos": "Descripcion breve en 2-3 oraciones de lo que haran los ninos ese dia lenguaje simple para familias",
-  "que_haran_familias": "Sugerencia concreta de actividad familiar en casa relacionada con el tema 2-3 oraciones",
-  "que_necesitamos": "2-3 materiales concretos y creativos que la familia puede conseguir o preparar en casa relacionados con el tema del dia. Nunca usar texto generico.",
+  "que_haran_ninos": "Descripcion en 4-5 oraciones en lenguaje simple y cercano para familias explicando que vivira el nino ese dia: que exploraran, con que materiales, que aprendizaje se busca. Tono calido y entusiasta, como si le contaras a un apoderado lo que hara su hijo.",
+  "que_haran_familias": "Sugerencia de actividad familiar en casa en 4-5 oraciones: describe la actividad con pasos concretos, como invitar al nino a participar, que preguntas hacerle durante la actividad ('Que paso cuando...?', 'Como lo hiciste?') y como valorar lo que el nino hace o dice. Relacionada directamente con el tema del dia.",
+  "que_necesitamos": "Lista de 3-5 materiales muy concretos y creativos que la familia puede conseguir facilmente en casa o en el comercio, relacionados directamente con el tema. Incluye una breve indicacion de como usarlos o prepararlos si es necesario. Nunca usar texto generico como 'materiales del hogar'.",
   "indicador_oa1": "Indicador observable 1 del OA comienza con verbo",
   "indicador_oa2": "Indicador observable 2 del OA comienza con verbo",
   "indicador_oat": "Indicador observable del OAT comienza con verbo",
@@ -421,57 +421,100 @@ def build_planificacion(data: dict, ai: dict) -> bytes:
 
 def build_info_familia(data: dict, ai: dict) -> bytes:
     from datetime import datetime, timedelta
+
+    COLOR_FAM_HEADER  = "185FA5"   # azul encabezado día
+    COLOR_FAM_TEMA    = "EBF5FB"   # azul muy claro para fila tema
+    COLOR_FAM_NINOS   = "E8F8F2"   # verde claro
+    COLOR_FAM_FAM     = "FEF9E7"   # amarillo claro
+    COLOR_FAM_MAT     = "F9EBEA"   # rojo claro
+
     doc = Document()
     section = doc.sections[0]
     section.orientation   = WD_ORIENT.LANDSCAPE
     section.page_width    = Cm(27.94)
     section.page_height   = Cm(21.59)
-    section.top_margin    = Cm(2.25)
-    section.bottom_margin = Cm(2.50)
-    section.left_margin   = Cm(2.50)
-    section.right_margin  = Cm(2.50)
+    section.top_margin    = Cm(1.8)
+    section.bottom_margin = Cm(1.8)
+    section.left_margin   = Cm(2.0)
+    section.right_margin  = Cm(2.0)
 
+    # Título principal
     title_p = doc.add_paragraph()
     title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    rt = title_p.add_run(f'"Organizando mi semana del {data["fecha_inicio"]} al {data["fecha_fin"]}"')
-    rt.bold = True; rt.font.size = Pt(12)
+    rt = title_p.add_run("¡Nos acompañas esta semana?")
+    rt.bold = True; rt.font.size = Pt(14)
+    rt.font.color.rgb = RGBColor(0x18, 0x5F, 0xA5)
+
+    # Subtítulo con fechas
+    try:
+        fi = datetime.strptime(data["fecha_inicio"], "%Y-%m-%d")
+        ff = datetime.strptime(data["fecha_fin"],    "%Y-%m-%d")
+        MESES = ["enero","febrero","marzo","abril","mayo","junio",
+                 "julio","agosto","septiembre","octubre","noviembre","diciembre"]
+        rango = f"{fi.day} al {ff.day} de {MESES[ff.month-1]} de {ff.year}"
+    except Exception:
+        rango = f"{data.get('fecha_inicio','')} al {data.get('fecha_fin','')}"
 
     sub_p = doc.add_paragraph()
     sub_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    sub_p.add_run("Medio Menor 2026").font.size = Pt(12)
+    sub_p.add_run(f"Semana del {rango}  ·  Nivel Medio Menor  ·  Educadora: {data.get('educadora','')}").font.size = Pt(10)
+
     doc.add_paragraph()
 
-    table = doc.add_table(rows=4, cols=5)
+    # Tabla: fila encabezado + fila tema + 3 filas de contenido
+    table = doc.add_table(rows=5, cols=5)
     table.style = "Table Grid"
-    for row in table.rows:
-        for cell in row.cells:
-            cell.width = Cm(3.74)
 
     try:
         fecha_ini = datetime.strptime(data["fecha_inicio"], "%Y-%m-%d")
         fechas = [(fecha_ini + timedelta(days=i)) for i in range(5)]
-        dias_labels = [f"{DIAS_NAMES[i].upper()} {fechas[i].day}" for i in range(5)]
+        dias_labels = [f"{DIAS_NAMES[i].upper()}\n{fechas[i].day}" for i in range(5)]
     except Exception:
         dias_labels = [n.upper() for n in DIAS_NAMES]
 
+    # Fila 0: encabezados de día
     for i, label in enumerate(dias_labels):
         cell = table.rows[0].cells[i]
-        set_cell_bg(cell, COLOR_HEADER)
-        cell_write(cell, label, bold=True, size=11, align=WD_ALIGN_PARAGRAPH.CENTER)
+        set_cell_bg(cell, COLOR_FAM_HEADER)
+        for line in label.split("\n"):
+            p = cell.add_paragraph() if cell.paragraphs[0].text else cell.paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            r = p.add_run(line)
+            r.bold = True; r.font.size = Pt(11)
+            r.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+
+    # Fila 1: tema del día
+    for i, key in enumerate(DIAS_KEYS):
+        aid = ai.get(key, {})
+        tema_raw = data["dias"][i].get("tema", "") if i < len(data.get("dias",[])) else ""
+        titulo   = aid.get("titulo_dia", tema_raw)
+        cell = table.rows[1].cells[i]
+        set_cell_bg(cell, COLOR_FAM_TEMA)
+        cell.paragraphs[0].clear()
+        r = cell.paragraphs[0].add_run(titulo)
+        r.bold = True; r.font.size = Pt(9)
+        r.font.color.rgb = RGBColor(0x0C, 0x44, 0x7C)
+        cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    # Filas 2-4: contenido
+    ROW_COLORS = [COLOR_FAM_NINOS, COLOR_FAM_FAM, COLOR_FAM_MAT]
+    FIELDS = [
+        ("que_haran_ninos",    "👧 ¿Qué harán los niños y niñas?"),
+        ("que_haran_familias", "🏠 ¿Qué pueden hacer en casa?"),
+        ("que_necesitamos",    "🛍 ¿Qué necesitamos?"),
+    ]
 
     for i, key in enumerate(DIAS_KEYS):
         aid = ai.get(key, {})
-        for row_idx, (field, label) in enumerate([
-            ("que_haran_ninos",    "¿Qué harán los niños/as? "),
-            ("que_haran_familias", "¿Qué harán las familias? "),
-            ("que_necesitamos",    "¿Qué necesitamos? "),
-        ]):
-            cell = table.rows[row_idx + 1].cells[i]
-            set_cell_bg(cell, COLOR_GRAY)
+        for row_idx, (field, label) in enumerate(FIELDS):
+            cell = table.rows[row_idx + 2].cells[i]
+            set_cell_bg(cell, ROW_COLORS[row_idx])
             cell.paragraphs[0].clear()
-            rl = cell.paragraphs[0].add_run(label)
-            rl.bold = True; rl.font.size = Pt(9)
-            val = aid.get(field, "Utilizaremos recursos del centro educativo.")
+            # Label en negrita
+            rl = cell.paragraphs[0].add_run(label + "\n")
+            rl.bold = True; rl.font.size = Pt(8.5)
+            # Contenido
+            val = aid.get(field, "")
             cell.paragraphs[0].add_run(val).font.size = Pt(9)
 
     buf = io.BytesIO()
