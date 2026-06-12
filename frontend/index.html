@@ -262,6 +262,41 @@ header p  { font-size: 12px; opacity: 0.72; margin-top: 3px; }
 .ideas-hint { font-size: 10px; color: var(--disabled); margin-top: 5px; font-style: italic; }
 .ideas-count { font-size: 10px; font-weight: 700; color: var(--blue); margin-bottom: 5px; }
 
+.manual-idea-row { display: flex; gap: 5px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--slate-200); }
+.manual-idea-input {
+  flex: 1;
+  padding: 6px 9px;
+  border: 1.5px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  background: var(--slate-50);
+  color: var(--slate-900);
+  min-width: 0;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.manual-idea-input:focus { outline: none; border-color: var(--blue); background: white; box-shadow: 0 0 0 3px rgba(24,95,165,0.1); }
+.manual-idea-input::placeholder { color: var(--disabled); }
+.btn-add-idea {
+  padding: 6px 10px;
+  background: var(--blue);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-add-idea:hover { background: var(--blue-dark); transform: translateY(-1px); }
+.btn-add-idea:active { transform: translateY(0); }
+.chip.manual { border-style: dashed; }
+.chip.manual.selected { border-style: solid; }
+.chip-delete { font-size: 10px; opacity: 0.55; margin-left: 6px; padding: 1px 3px; border-radius: 3px; transition: opacity 0.15s; }
+.chip-delete:hover { opacity: 1; }
+.chip.selected .chip-delete { opacity: 0.7; }
+.chip.selected .chip-delete:hover { opacity: 1; }
+
 /* ── OA SELECT ── */
 .oa-select {
   width: 100%;
@@ -586,6 +621,10 @@ function buildMatrix() {
     c.id = `ideas-cell-${i}`;
     c.innerHTML = `<div class="ideas-area" id="ideas-area-${i}">
       <div style="font-size:11px;color:#94a3b8">Ingresa un tema y presiona "Sugerir ideas"</div>
+    </div>
+    <div class="manual-idea-row">
+      <input class="manual-idea-input" id="manual-idea-${i}" placeholder="Agregar idea propia…" />
+      <button class="btn-add-idea" onclick="agregarIdeaManual(${i})" title="Agregar idea">+</button>
     </div>`;
     matrix.appendChild(c);
   });
@@ -688,6 +727,25 @@ function updateOATBadge(day) {
   badge.style.display = state[day].oat ? 'none' : 'inline-block';
 }
 
+// ── Agregar idea manual ──
+function agregarIdeaManual(day) {
+  const input = document.getElementById(`manual-idea-${day}`);
+  const texto = input.value.trim();
+  if (!texto) return;
+  state[day].ideas.push({ titulo: texto, descripcion: '', manual: true });
+  input.value = '';
+  input.focus();
+  aiData = null;
+  renderIdeas(day);
+}
+
+// Permitir Enter en el input manual
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter') return;
+  const m = e.target.id && e.target.id.match(/^manual-idea-(\d+)$/);
+  if (m) agregarIdeaManual(parseInt(m[1]));
+});
+
 // ── Sugerir ideas para un día ──
 async function sugerirIdeas(day) {
   const tema = document.getElementById(`tema-${day}`).value.trim();
@@ -717,37 +775,50 @@ async function sugerirIdeas(day) {
 }
 
 function renderIdeas(day) {
-  const area = document.getElementById(`ideas-area-${day}`);
-  const sel  = state[day].seleccionadas;
+  const area  = document.getElementById(`ideas-area-${day}`);
+  const sel   = state[day].seleccionadas;
   const ideas = state[day].ideas;
 
-  area.innerHTML = `<div class="ideas-count">${sel.length}/3 seleccionadas</div>`;
+  area.innerHTML = ideas.length
+    ? `<div class="ideas-count">${sel.length}/3 seleccionadas</div>`
+    : `<div style="font-size:11px;color:#94a3b8">Ingresa un tema y presiona "Sugerir ideas", o agrega una idea propia.</div>`;
 
   ideas.forEach((idea, idx) => {
     const isSelected = sel.includes(idx);
     const isDisabled = !isSelected && sel.length >= 3;
+    const isManual   = !!idea.manual;
 
     const wrap = document.createElement('div');
     wrap.className = 'chip-wrap';
 
     const chip = document.createElement('div');
-    chip.className = `chip${isSelected ? ' selected' : ''}${isDisabled ? ' disabled' : ''}`;
-    chip.innerHTML = `<span class="chip-title">${idea.titulo}</span><span class="chip-toggle">▾</span>`;
+    chip.className = `chip${isManual ? ' manual' : ''}${isSelected ? ' selected' : ''}${isDisabled ? ' disabled' : ''}`;
 
-    const desc = document.createElement('div');
-    desc.className = 'chip-desc';
-    desc.textContent = idea.descripcion;
+    if (isManual) {
+      // Ideas manuales: sin toggle de descripción, con botón eliminar
+      chip.innerHTML = `<span class="chip-title">${idea.titulo}</span><span class="chip-delete" title="Eliminar">✕</span>`;
+      chip.querySelector('.chip-delete').addEventListener('click', (e) => {
+        e.stopPropagation();
+        state[day].ideas = ideas.filter((_, i) => i !== idx);
+        state[day].seleccionadas = sel.filter(i => i !== idx).map(i => i > idx ? i - 1 : i);
+        aiData = null;
+        renderIdeas(day);
+      });
+    } else {
+      chip.innerHTML = `<span class="chip-title">${idea.titulo}</span><span class="chip-toggle">▾</span>`;
+      const desc = document.createElement('div');
+      desc.className = 'chip-desc';
+      desc.textContent = idea.descripcion;
+      chip.querySelector('.chip-toggle').addEventListener('click', (e) => {
+        e.stopPropagation();
+        chip.classList.toggle('open');
+        desc.classList.toggle('open');
+      });
+      wrap.appendChild(desc);
+    }
 
-    // Toggle descripción
-    chip.querySelector('.chip-toggle').addEventListener('click', (e) => {
-      e.stopPropagation();
-      chip.classList.toggle('open');
-      desc.classList.toggle('open');
-    });
-
-    // Seleccionar chip
     chip.addEventListener('click', (e) => {
-      if (e.target === chip.querySelector('.chip-toggle')) return;
+      if (e.target.classList.contains('chip-toggle') || e.target.classList.contains('chip-delete')) return;
       if (isDisabled) return;
       if (isSelected) {
         state[day].seleccionadas = sel.filter(i => i !== idx);
@@ -758,12 +829,11 @@ function renderIdeas(day) {
       renderIdeas(day);
     });
 
-    wrap.appendChild(chip);
-    wrap.appendChild(desc);
+    wrap.insertBefore(chip, wrap.firstChild);
     area.appendChild(wrap);
   });
 
-  if (sel.length < 3) {
+  if (ideas.length > 0 && sel.length < 3) {
     const hint = document.createElement('div');
     hint.className = 'ideas-hint';
     hint.textContent = `Selecciona ${3 - sel.length} idea${3 - sel.length > 1 ? 's' : ''} más`;
