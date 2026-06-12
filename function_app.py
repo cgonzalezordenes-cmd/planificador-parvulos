@@ -66,7 +66,7 @@ def build_prompt(data: dict) -> str:
         ideas_txt = ""
         if dia.get('ideas'):
             ideas_txt = "\nIdeas seleccionadas:\n" + "\n".join([
-                f"- {idea['titulo']}: {idea['descripcion']}"
+                f"- {idea['titulo']}{': ' + idea['descripcion'] if idea.get('descripcion') else ''}"
                 for idea in dia['ideas']
             ])
             ideas_txt += "\nUsa estas ideas para sugerir materiales creativos y especificos que la familia pueda conseguir facilmente."
