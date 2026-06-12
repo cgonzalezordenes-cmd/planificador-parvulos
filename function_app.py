@@ -46,7 +46,7 @@ El JSON debe tener claves: lunes, martes, miercoles, jueves, viernes. Cada una c
   "indicador_oa2": "Indicador observable 2 del OA comienza con verbo",
   "indicador_oat": "Indicador observable del OAT comienza con verbo",
   "oa_asignado": "Solo si OA fue auto-seleccionado: texto completo del OA elegido",
-  "nucleo_asignado": "Solo si OA fue auto-seleccionado: nombre del Nucleo al que pertenece el OA elegido",
+  "nucleo_asignado": "Solo si OA fue auto-seleccionado: escribe UNICAMENTE el nombre del Nucleo de aprendizaje, no el texto del OA. Ejemplos validos: 'Identidad y Autonomia', 'Convivencia y Ciudadania', 'Corporalidad y Movimiento', 'Lenguaje Verbal', 'Lenguajes Artisticos', 'Exploracion del Entorno Natural', 'Comprension del Entorno Sociocultural', 'Pensamiento Matematico'.",
   "oat_asignado": "Solo si OAT fue auto-seleccionado: texto completo del OAT elegido"
 }
 
