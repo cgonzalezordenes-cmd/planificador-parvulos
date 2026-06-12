@@ -29,7 +29,7 @@ Responde SOLO con un objeto JSON válido sin texto adicional, sin bloques de có
 El JSON debe tener claves: lunes, martes, miercoles, jueves, viernes. Cada una con exactamente estos campos:
 {
   "titulo_dia": "Lunes 9 de junio: Titulo creativo de la experiencia",
-  "inicio": "Texto del momento de inicio 2-3 oraciones motivadoras con presentacion de materiales en primera persona de la educadora",
+  "inicio": "Momento de inicio detallado (6-8 oraciones). La educadora presenta los materiales con entusiasmo usando dialogo directo con los ninos en primera persona (ej: 'Ninos y ninas, hoy les traje...'). Describe brevemente que es cada material de forma simple y cercana. Luego la educadora modela la accion ella primero ('Yo voy a probar... miren lo que pasa...'). Finaliza con una invitacion concreta a los ninos a participar ('Ahora ustedes pueden...'). Tono cercano, motivador y adecuado para 3 anos.",
   "escenario_1_titulo": "Titulo descriptivo escenario 1",
   "escenario_1_desc": "Descripcion detallada con mediacion y cierre 4-5 oraciones",
   "escenario_2_titulo": "Titulo descriptivo escenario 2",
