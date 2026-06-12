@@ -504,87 +504,13 @@ header p  { font-size: 12px; opacity: 0.72; margin-top: 3px; }
 <script>
 const API = 'https://planificador-parvulos.azurewebsites.net/api';
 
-const OA_BANK = {
-  DPS: {
-    "Identidad y Autonomía": [
-      {num:"OA 1", texto:"Representar verbal y corporalmente diferentes emociones y sentimientos, en sus juegos."},
-      {num:"OA 4", texto:"Manifestar disposición para regular sus emociones en función de las necesidades propias y de los demás."},
-      {num:"OA 5", texto:"Manifestar sus preferencias cuando participa o solicita participar, en diversas situaciones cotidianas y juegos."},
-      {num:"OA 6", texto:"Actuar con progresiva independencia, ampliando su repertorio de acciones acorde a sus necesidades e intereses."},
-      {num:"OA 7", texto:"Comunicar algunos rasgos de su identidad, como su nombre, características corporales, género y otros."},
-      {num:"OA 9", texto:"Manifestar progresiva independencia en prácticas de alimentación, higiene corporal, bucal y evacuación."},
-      {num:"OA 10", texto:"Manifestar satisfacción y confianza por su autovalía, comunicando algunos desafíos alcanzados."},
-    ],
-    "Convivencia y Ciudadanía": [
-      {num:"OA 1", texto:"Participar en actividades y juegos grupales con sus pares, conversando, intercambiando pertenencias, cooperando."},
-      {num:"OA 3", texto:"Colaborar en situaciones cotidianas y de juego, proponiendo acciones simples frente a necesidades de sus pares."},
-      {num:"OA 6", texto:"Manifestar disposición para practicar acuerdos de convivencia básica que regulan situaciones cotidianas."},
-      {num:"OA 8", texto:"Reconocer acciones correctas e incorrectas para la convivencia armónica del grupo."},
-      {num:"OA 10", texto:"Manifestar interés para interactuar con niños y niñas, reconociendo la diversidad de sus características."},
-    ],
-    "Corporalidad y Movimiento": [
-      {num:"OA 2", texto:"Reconocer las principales partes, características físicas de su cuerpo y sus funciones."},
-      {num:"OA 3", texto:"Experimentar diversas posibilidades de acción con su cuerpo."},
-      {num:"OA 5", texto:"Perfeccionar su coordinación visomotriz fina, a través del uso de diversos objetos, juguetes y utensilios."},
-      {num:"OA 6", texto:"Adquirir control y equilibrio en movimientos, posturas y desplazamientos."},
-      {num:"OA 7", texto:"Resolver desafíos prácticos en situaciones cotidianas y juegos, incorporando mayor precisión y coordinación."},
-    ]
-  },
-  CI: {
-    "Lenguaje Verbal": [
-      {num:"OA 1", texto:"Expresarse oralmente, empleando estructuras oracionales simples y respetando patrones gramaticales básicos."},
-      {num:"OA 2", texto:"Comprender mensajes simples como instrucciones explícitas, explicaciones y preguntas."},
-      {num:"OA 4", texto:"Incorporar progresivamente nuevas palabras al comunicar oralmente temas variados de su interés."},
-      {num:"OA 6", texto:"Comprender, a partir de la escucha atenta, contenidos explícitos de textos literarios y no literarios."},
-    ],
-    "Lenguajes Artísticos": [
-      {num:"OA 3", texto:"Interpretar canciones y juegos musicales, experimentando con diversos recursos (voz, cuerpo, instrumentos)."},
-      {num:"OA 4", texto:"Expresar corporalmente sensaciones y emociones experimentando con mímica, juegos teatrales, rondas y danzas."},
-      {num:"OA 5", texto:"Expresar emociones, ideas y experiencias por medio de la plástica experimentando con recursos pictóricos y de modelado."},
-      {num:"OA 7", texto:"Representar a través del dibujo diversos elementos de su entorno, incorporando figuras cerradas y primeros esbozos de la figura humana."},
-    ]
-  },
-  ICE: {
-    "Exploración del Entorno Natural": [
-      {num:"OA 1", texto:"Manifestar interés y asombro por diversos elementos, situaciones y fenómenos del entorno natural."},
-      {num:"OA 2", texto:"Comunicar verbalmente características de elementos y paisajes de su entorno natural."},
-      {num:"OA 4", texto:"Comunicar algunas propiedades básicas de los elementos naturales que explora (colores, texturas, tamaños)."},
-      {num:"OA 5", texto:"Distinguir una variedad de animales y plantas respecto a sus características, necesidades básicas y lugares que habitan."},
-      {num:"OA 6", texto:"Colaborar en acciones que contribuyen al desarrollo de ambientes sostenibles."},
-    ],
-    "Comprensión del Entorno Sociocultural": [
-      {num:"OA 1", texto:"Describir actividades habituales de su comunidad (ir de compras, jugar en la plaza, viajar en bus)."},
-      {num:"OA 4", texto:"Reconocer sucesos significativos de su historia personal y familiar."},
-      {num:"OA 6", texto:"Identificar algunas normas de protección y seguridad de su entorno cotidiano."},
-    ],
-    "Pensamiento Matemático": [
-      {num:"OA 1", texto:"Reproducir patrones sonoros, visuales, gestuales, corporales u otros, de dos o tres elementos."},
-      {num:"OA 5", texto:"Emplear cuantificadores tales como más/menos, mucho/poco, todo/ninguno, al comparar cantidades de objetos."},
-      {num:"OA 6", texto:"Emplear progresivamente los números para contar, identificar, cuantificar y comparar cantidades hasta el 10."},
-    ]
-  }
-};
-
-const OAT_LIST = [
-  {num:"IA OA 4", texto:"Manifestar disposición para regular sus emociones.", nucleo:"Identidad y Autonomía"},
-  {num:"IA OA 5", texto:"Manifestar sus preferencias en situaciones cotidianas y juegos.", nucleo:"Identidad y Autonomía"},
-  {num:"CC OA 1", texto:"Participar en actividades grupales, conversando y cooperando.", nucleo:"Convivencia y Ciudadanía"},
-  {num:"CC OA 6", texto:"Practicar acuerdos de convivencia básica.", nucleo:"Convivencia y Ciudadanía"},
-  {num:"CC OA 8", texto:"Reconocer acciones correctas e incorrectas para la convivencia.", nucleo:"Convivencia y Ciudadanía"},
-  {num:"CC OA 10", texto:"Interactuar con niños/as reconociendo la diversidad.", nucleo:"Convivencia y Ciudadanía"},
-  {num:"CM OA 3", texto:"Experimentar diversas posibilidades de acción con su cuerpo.", nucleo:"Corporalidad y Movimiento"},
-];
-
 const DIAS      = ['Lunes','Martes','Miércoles','Jueves','Viernes'];
 const DIAS_KEYS = ['lunes','martes','miercoles','jueves','viernes'];
-const AMBITOS   = {DPS:'Desarrollo Personal y Social', CI:'Comunicación Integral', ICE:'Interacción y Comprensión del Entorno'};
 
 // Estado por día
 const state = DIAS.map(() => ({
-  ideas: [],          // [{titulo, descripcion}]
-  seleccionadas: [],  // indices seleccionados (max 3)
-  oa: null,
-  oat: null
+  ideas: [],         // [{titulo, descripcion}]
+  seleccionadas: [], // indices seleccionados (max 3)
 }));
 
 let aiData = null;
@@ -630,47 +556,6 @@ function buildMatrix() {
     matrix.appendChild(c);
   });
 
-  // Fila 3: ÁMBITO + OA
-  matrix.appendChild(mkCell('row-header', 'OA'));
-  DIAS.forEach((d, i) => {
-    const c = document.createElement('div');
-    c.className = 'cell';
-    c.innerHTML = `
-      <div class="field" style="margin-bottom:8px">
-        <label>Ámbito</label>
-        <select class="oa-select" id="ambito-${i}" onchange="renderOASelect(${i})">
-          <option value="DPS">Desarrollo Personal y Social</option>
-          <option value="CI">Comunicación Integral</option>
-          <option value="ICE">Interacción y Comprensión del Entorno</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>OA</label>
-        <select class="oa-select" id="oa-select-${i}" onchange="setOA(${i})">
-          <option value="">— IA elige automáticamente —</option>
-        </select>
-      </div>
-      <span class="oa-auto-badge" id="oa-badge-${i}">Auto IA</span>`;
-    matrix.appendChild(c);
-    setTimeout(() => renderOASelect(i), 0);
-  });
-
-  // Fila 4: OAT
-  matrix.appendChild(mkCell('row-header', 'OAT'));
-  DIAS.forEach((d, i) => {
-    const c = document.createElement('div');
-    c.className = 'cell';
-    c.innerHTML = `
-      <div class="field">
-        <label>OAT</label>
-        <select class="oa-select" id="oat-select-${i}" onchange="setOAT(${i})">
-          <option value="">— IA elige automáticamente —</option>
-          ${OAT_LIST.map((o,j) => `<option value="${j}">${o.num}: ${o.texto.substring(0,40)}...</option>`).join('')}
-        </select>
-      </div>
-      <span class="oa-auto-badge" id="oat-badge-${i}">Auto IA</span>`;
-    matrix.appendChild(c);
-  });
 }
 
 function mkCell(cls, text) {
@@ -678,54 +563,6 @@ function mkCell(cls, text) {
   c.className = `cell ${cls}`;
   c.textContent = text;
   return c;
-}
-
-function renderOASelect(day) {
-  const ambitoKey = document.getElementById(`ambito-${day}`).value;
-  const nucleos   = OA_BANK[ambitoKey];
-  const sel       = document.getElementById(`oa-select-${day}`);
-  sel.innerHTML   = '<option value="">— IA elige automáticamente —</option>';
-  Object.entries(nucleos).forEach(([nucleo, oas]) => {
-    const grp = document.createElement('optgroup');
-    grp.label = nucleo;
-    oas.forEach((oa, j) => {
-      const opt = document.createElement('option');
-      opt.value = `${ambitoKey}||${nucleo}||${oa.num}||${oa.texto}`;
-      opt.textContent = `${oa.num}: ${oa.texto.substring(0,50)}...`;
-      grp.appendChild(opt);
-    });
-    sel.appendChild(grp);
-  });
-  state[day].oa = null;
-  updateOABadge(day);
-}
-
-function setOA(day) {
-  const val = document.getElementById(`oa-select-${day}`).value;
-  if (!val) { state[day].oa = null; }
-  else {
-    const p = val.split('||');
-    state[day].oa = {ambito: AMBITOS[p[0]], nucleo: p[1], num: p[2], texto: p[3]};
-  }
-  updateOABadge(day);
-  aiData = null;
-}
-
-function setOAT(day) {
-  const val = document.getElementById(`oat-select-${day}`).value;
-  state[day].oat = val === '' ? null : OAT_LIST[parseInt(val)];
-  updateOATBadge(day);
-  aiData = null;
-}
-
-function updateOABadge(day) {
-  const badge = document.getElementById(`oa-badge-${day}`);
-  badge.style.display = state[day].oa ? 'none' : 'inline-block';
-}
-
-function updateOATBadge(day) {
-  const badge = document.getElementById(`oat-badge-${day}`);
-  badge.style.display = state[day].oat ? 'none' : 'inline-block';
 }
 
 // ── Agregar idea manual ──
@@ -844,26 +681,16 @@ function renderIdeas(day) {
 
 // ── Construir form data ──
 function getFormData() {
-  const ambitos = {DPS:'Desarrollo Personal y Social', CI:'Comunicación Integral', ICE:'Interacción y Comprensión del Entorno'};
   return {
     educadora:    document.getElementById('educadora').value,
     tecnicos:     document.getElementById('tecnicos').value,
     fecha_inicio: document.getElementById('fecha-inicio').value,
     fecha_fin:    document.getElementById('fecha-fin').value,
-    dias: DIAS.map((nombre, i) => {
-      const ambitoKey = document.getElementById(`ambito-${i}`).value;
-      const ideas_sel = state[i].seleccionadas.map(idx => state[i].ideas[idx]);
-      return {
-        nombre,
-        tema:         document.getElementById(`tema-${i}`).value,
-        ambito:       ambitos[ambitoKey],
-        ideas:        ideas_sel,
-        oa:           state[i].oa,
-        oat:          state[i].oat,
-        oa_auto:      !state[i].oa,
-        oat_auto:     !state[i].oat
-      };
-    })
+    dias: DIAS.map((nombre, i) => ({
+      nombre,
+      tema:  document.getElementById(`tema-${i}`).value,
+      ideas: state[i].seleccionadas.map(idx => state[i].ideas[idx]),
+    }))
   };
 }
 
@@ -926,14 +753,15 @@ function renderPreview(form, ai) {
     };
     tabsEl.appendChild(tab);
 
-    const oaText  = fd.oa  ? `${fd.oa.num} — ${fd.oa.texto}`   : `${d.oa_asignado || 'IA asignó automáticamente'}`;
-    const oatText = fd.oat ? `${fd.oat.num} — ${fd.oat.texto}` : `${d.oat_asignado || 'IA asignó automáticamente'}`;
+    const oaText  = d.oa_num  ? `${d.oa_num}: ${d.oa_texto}`   : '—';
+    const oatText = d.oat_num ? `${d.oat_num}: ${d.oat_texto}` : '—';
 
     const panel = document.createElement('div');
     panel.className = 'preview-panel' + (i === 0 ? ' active' : '');
     panel.innerHTML = `
       <div class="preview-day">
         <h3>${d.titulo_dia || nombre + ': ' + fd.tema}</h3>
+        <div class="pf"><strong>Ámbito:</strong> ${d.ambito || '—'} · <strong>Núcleo:</strong> ${d.nucleo || '—'}</div>
         <div class="pf"><strong>OA:</strong> ${oaText}</div>
         <div class="pf"><strong>OAT:</strong> ${oatText}</div>
         <div class="pf" style="margin-top:8px"><strong>Inicio:</strong> ${d.inicio||''}</div>

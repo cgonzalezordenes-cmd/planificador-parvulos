@@ -25,10 +25,26 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 SYSTEM_PROMPT = """Eres una experta en Educación Parvularia chilena. Generas planificaciones semanales co-construidas y diversificadas para Nivel Medio Menor (3 años) siguiendo las Bases Curriculares de Educación Parvularia 2018.
 
-Responde SOLO con un objeto JSON válido sin texto adicional, sin bloques de código markdown.
+Para cada dia elige el Ambito, Nucleo y OA mas adecuado segun el tema e ideas proporcionadas.
+
+AMBITOS Y NUCLEOS disponibles para el OA principal:
+- Desarrollo Personal y Social: Identidad y Autonomia | Convivencia y Ciudadania | Corporalidad y Movimiento
+- Comunicacion Integral: Lenguaje Verbal | Lenguajes Artisticos
+- Interaccion y Comprension del Entorno: Exploracion del Entorno Natural | Comprension del Entorno Sociocultural | Pensamiento Matematico
+
+El OAT siempre pertenece al ambito Desarrollo Personal y Social. Elige el nucleo (Identidad y Autonomia | Convivencia y Ciudadania | Corporalidad y Movimiento) y el OAT mas complementario al OA principal.
+
+Responde SOLO con un objeto JSON valido sin texto adicional, sin bloques de codigo markdown.
 El JSON debe tener claves: lunes, martes, miercoles, jueves, viernes. Cada una con exactamente estos campos:
 {
   "titulo_dia": "Lunes 9 de junio: Titulo creativo de la experiencia",
+  "ambito": "Nombre exacto del ambito del OA (Desarrollo Personal y Social | Comunicacion Integral | Interaccion y Comprension del Entorno)",
+  "nucleo": "Nombre exacto del nucleo dentro del ambito (ej: Identidad y Autonomia, Lenguajes Artisticos, Pensamiento Matematico)",
+  "oa_num": "Solo el numero del OA elegido (ej: OA 3)",
+  "oa_texto": "Texto completo del OA elegido sin incluir el numero",
+  "oat_nucleo": "Nombre del nucleo del OAT dentro de Desarrollo Personal y Social",
+  "oat_num": "Solo el numero del OAT (ej: OA 6)",
+  "oat_texto": "Texto completo del OAT elegido sin incluir el numero",
   "inicio": "Momento de inicio detallado (6-8 oraciones). La educadora presenta los materiales con entusiasmo usando dialogo directo con los ninos en primera persona (ej: 'Ninos y ninas, hoy les traje...'). Describe brevemente que es cada material de forma simple y cercana. Luego la educadora modela la accion ella primero ('Yo voy a probar... miren lo que pasa...'). Finaliza con una invitacion concreta a los ninos a participar ('Ahora ustedes pueden...'). Tono cercano, motivador y adecuado para 3 anos.",
   "escenario_1_titulo": "Titulo descriptivo escenario 1",
   "escenario_1_desc": "Descripcion detallada con mediacion y cierre 4-5 oraciones",
@@ -44,10 +60,7 @@ El JSON debe tener claves: lunes, martes, miercoles, jueves, viernes. Cada una c
   "que_necesitamos": "Lista de 3-5 materiales muy concretos y creativos que la familia puede conseguir facilmente en casa o en el comercio, relacionados directamente con el tema. Incluye una breve indicacion de como usarlos o prepararlos si es necesario. Nunca usar texto generico como 'materiales del hogar'.",
   "indicador_oa1": "Indicador observable 1 del OA comienza con verbo",
   "indicador_oa2": "Indicador observable 2 del OA comienza con verbo",
-  "indicador_oat": "Indicador observable del OAT comienza con verbo",
-  "oa_asignado": "Solo si OA fue auto-seleccionado: texto completo del OA elegido",
-  "nucleo_asignado": "Solo si OA fue auto-seleccionado: escribe UNICAMENTE el nombre del Nucleo de aprendizaje, no el texto del OA. Ejemplos validos: 'Identidad y Autonomia', 'Convivencia y Ciudadania', 'Corporalidad y Movimiento', 'Lenguaje Verbal', 'Lenguajes Artisticos', 'Exploracion del Entorno Natural', 'Comprension del Entorno Sociocultural', 'Pensamiento Matematico'.",
-  "oat_asignado": "Solo si OAT fue auto-seleccionado: texto completo del OAT elegido"
+  "indicador_oat": "Indicador observable del OAT comienza con verbo"
 }
 
 IMPORTANTE: Usa solo comillas dobles. No uses saltos de linea dentro de los valores. Cada valor debe ser texto continuo en una sola linea."""
@@ -56,30 +69,15 @@ IMPORTANTE: Usa solo comillas dobles. No uses saltos de linea dentro de los valo
 def build_prompt(data: dict) -> str:
     dias_texto = []
     for dia in data["dias"]:
-        oa  = dia.get('oa') or {}
-        oat = dia.get('oat') or {}
-
-        oa_txt  = f"{oa['num']} - {oa['texto']}" if oa else "Seleccionar el OA mas apropiado para el tema"
-        oat_txt = f"{oat['num']} - {oat['texto']}" if oat else "Seleccionar el OAT mas apropiado para el tema"
-        nucleo  = oa.get('nucleo', 'El mas apropiado para el tema')
-        ambito  = dia.get('ambito', 'Desarrollo Personal y Social')
-
         ideas_txt = ""
         if dia.get('ideas'):
             ideas_txt = "\nIdeas seleccionadas:\n" + "\n".join([
                 f"- {idea['titulo']}{': ' + idea['descripcion'] if idea.get('descripcion') else ''}"
                 for idea in dia['ideas']
             ])
-            ideas_txt += "\nUsa estas ideas para sugerir materiales creativos y especificos que la familia pueda conseguir facilmente."
 
         dias_texto.append(f"""{dia['nombre']}:
-- Tema: {dia['tema']}
-- Ambito: {ambito}
-- Nucleo: {nucleo}
-- OA: {oa_txt}
-- OAT Ambito: Desarrollo Personal y Social
-- OAT Nucleo: {oat.get('nucleo', 'El mas apropiado')}
-- OAT: {oat_txt}{ideas_txt}""")
+- Tema: {dia['tema']}{ideas_txt}""")
 
     return f"""Genera la planificacion semanal completa para Nivel Medio Menor.
 Educadora: {data['educadora']}
@@ -89,7 +87,7 @@ Semana: {data['fecha_inicio']} al {data['fecha_fin']}
 {chr(10).join(dias_texto)}
 
 IMPORTANTE: Responde SOLO con JSON valido. Sin markdown. Sin saltos de linea dentro de los valores.
-Para los dias donde OA o OAT dicen "Seleccionar el mas apropiado", elige el mas adecuado segun el tema e incluye los campos oa_asignado y oat_asignado en la respuesta."""
+Elige el ambito, nucleo, OA y OAT mas adecuados para cada dia segun el tema e ideas."""
 
 
 SUGGEST_PROMPT = """Eres una experta en Educación Parvularia chilena para Nivel Medio Menor (niños de 3 años).
@@ -298,23 +296,22 @@ def build_planificacion(data: dict, ai: dict) -> bytes:
 
     # Filas OA por día
     for idx, key in enumerate(DIAS_KEYS):
-        fd      = data["dias"][idx]
-        aid     = ai.get(key, {})
-        oa      = fd.get("oa") or {}
-        oat     = fd.get("oat") or {}
-        row     = table.rows[idx + 1]
+        fd         = data["dias"][idx]
+        aid        = ai.get(key, {})
+        row        = table.rows[idx + 1]
 
-        nucleo_txt = oa.get("nucleo") or aid.get("nucleo_asignado", "—")
-        oa_txt     = f"{oa.get('num','')}: {oa.get('texto','')}" if oa else aid.get("oa_asignado", "")
-        oat_nucleo = oat.get("nucleo", "Convivencia y Ciudadanía")
-        oat_num    = oat.get("num", "")
-        oat_texto  = oat.get("texto", "") or aid.get("oat_asignado", "")
+        ambito_txt = aid.get("ambito", "")
+        nucleo_txt = aid.get("nucleo", "")
+        oa_txt     = f"{aid.get('oa_num','')}: {aid.get('oa_texto','')}"
+        oat_nucleo = aid.get("oat_nucleo", "")
+        oat_num    = aid.get("oat_num", "")
+        oat_texto  = aid.get("oat_texto", "")
 
         c0 = row.cells[0]
         c0.paragraphs[0].clear()
         rb = c0.paragraphs[0].add_run(f"{DIAS_NAMES[idx]}: ")
         rb.bold = True; rb.font.size = Pt(9)
-        c0.paragraphs[0].add_run(fd.get("ambito","")).font.size = Pt(9)
+        c0.paragraphs[0].add_run(ambito_txt).font.size = Pt(9)
 
         cell_write(row.cells[1], nucleo_txt, size=9)
 
@@ -598,8 +595,6 @@ def build_evaluacion(form: dict, ai: dict) -> bytes:
         key    = DIAS_KEYS[d_idx]
         fd     = form["dias"][d_idx]
         aid    = ai.get(key, {})
-        oa     = fd.get("oa") or {}
-        oat    = fd.get("oat") or {}
         tema   = aid.get("titulo_dia") or fd.get("tema","")
         ind1   = aid.get("indicador_oa1","")
         ind2   = aid.get("indicador_oa2","")
@@ -624,12 +619,12 @@ def build_evaluacion(form: dict, ai: dict) -> bytes:
         ws.row_dimensions[1].height = 22
 
         meta = [
-            ("Ámbito OA:",     oa.get("ambito", fd.get("ambito",""))),
-            ("Núcleo OA:",     oa.get("nucleo","")),
-            ("OA principal:",  f"{oa.get('num','')}: {oa.get('texto','')}"),
+            ("Ámbito OA:",     aid.get("ambito","")),
+            ("Núcleo OA:",     aid.get("nucleo","")),
+            ("OA principal:",  f"{aid.get('oa_num','')}: {aid.get('oa_texto','')}"),
             ("Ámbito OAT:",    "Desarrollo Personal y Social"),
-            ("Núcleo OAT:",    oat.get("nucleo","")),
-            ("OAT:",           f"{oat.get('num','')}: {oat.get('texto','')}"),
+            ("Núcleo OAT:",    aid.get("oat_nucleo","")),
+            ("OAT:",           f"{aid.get('oat_num','')}: {aid.get('oat_texto','')}"),
         ]
         for i, (lbl, val) in enumerate(meta):
             r = i + 2
@@ -837,8 +832,6 @@ def build_evaluacion(form: dict, ai: dict) -> bytes:
         key   = DIAS_KEYS[d_idx]
         fd    = form["dias"][d_idx]
         aid   = ai.get(key,{})
-        oa    = fd.get("oa") or {}
-        oat   = fd.get("oat") or {}
         tema  = aid.get("titulo_dia") or fd.get("tema","")
         sname = day_sheets[d_idx]
         r_oa  = 3 + d_idx*2
@@ -850,10 +843,10 @@ def build_evaluacion(form: dict, ai: dict) -> bytes:
             ws_n.cell(r,2,f"{DIAS_NAMES[d_idx]} — {tema}").font = hfont(size=9)
             ws_n.cell(r,2).alignment = xleft()
             ws_n.cell(r,2).border = thin_border()
-            ws_n.cell(r,3,"Desarrollo Personal y Social (OAT)" if is_oat else oa.get("ambito",fd.get("ambito",""))).font = hfont(size=9)
+            ws_n.cell(r,3,"Desarrollo Personal y Social (OAT)" if is_oat else aid.get("ambito","")).font = hfont(size=9)
             ws_n.cell(r,3).alignment = xleft()
             ws_n.cell(r,3).border = thin_border()
-            ws_n.cell(r,4,oat.get("nucleo","") if is_oat else oa.get("nucleo","")).font = hfont(size=9)
+            ws_n.cell(r,4,aid.get("oat_nucleo","") if is_oat else aid.get("nucleo","")).font = hfont(size=9)
             ws_n.cell(r,4).alignment = xleft()
             ws_n.cell(r,4).border = thin_border()
             col_range = f"E10:E39" if is_oat else f"C10:D39"
