@@ -20,126 +20,195 @@ from groq import Groq
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 # ═══════════════════════════════════════════════════════
+# CATÁLOGO OFICIAL DE OAs — BCEP 2018 NIVEL MEDIO MENOR
+# ═══════════════════════════════════════════════════════
+
+OA_CATALOG = {
+    "Desarrollo Personal y Social": {
+        "Identidad y Autonomia": {
+            1: "Representar verbal y corporalmente diferentes emociones y sentimientos, en sus juegos.",
+            2: "Manifestar disposición y confianza al separarse de los adultos significativos.",
+            3: "Reconocer en sí mismo, en otras personas y en personajes de cuentos, emociones.",
+            4: "Manifestar disposición para regular sus emociones y sentimientos.",
+            5: "Manifestar sus preferencias cuando participa o solicita participar en situaciones cotidianas y juegos.",
+            6: "Actuar con progresiva independencia, ampliando su repertorio de acciones.",
+            7: "Comunicar algunos rasgos de su identidad, como su nombre, características corporales, género.",
+            8: "Apreciar sus características identitarias, fortalezas y habilidades.",
+            9: "Manifestar progresiva independencia en prácticas de alimentación, vestimenta, higiene corporal, bucal.",
+            10: "Manifestar satisfacción y confianza por su autovalía, comunicando algunos desafíos alcanzados.",
+            11: "Identificar alimentos que se consumen en algunas celebraciones propias de su familia y comunidad.",
+            12: "Representar sus pensamientos y experiencias, atribuyendo significados a objetos o elementos.",
+        },
+        "Convivencia y Ciudadania": {
+            1: "Participar en actividades y juegos grupales con sus pares, conversando, intercambiando pertenencias, cooperando.",
+            2: "Disfrutar de instancias de interacción social con diversas personas de la comunidad.",
+            3: "Colaborar en situaciones cotidianas y de juego, proponiendo acciones simples frente a necesidades de pares.",
+            4: "Colaborar en actividades, conmemoraciones o celebraciones culturales de su familia y comunidad.",
+            5: "Iniciarse en la resolución pacífica de conflictos, dialogando respecto de la situación.",
+            6: "Manifestar disposición para practicar acuerdos de convivencia básica que regulan situaciones cotidianas.",
+            7: "Identificar objetos, comportamientos y situaciones de riesgo que pueden atentar contra su seguridad.",
+            8: "Reconocer acciones correctas e incorrectas para la convivencia armónica del grupo.",
+            9: "Manifestar interés por algunos de sus derechos, tales como: ser escuchados, tener un nombre, jugar.",
+            10: "Manifestar interés para interactuar con niños y niñas, reconociendo la diversidad de sus características.",
+        },
+        "Corporalidad y Movimiento": {
+            1: "Reconocer situaciones en que se siente cómodo corporalmente.",
+            2: "Reconocer las principales partes, características físicas de su cuerpo y sus funciones.",
+            3: "Experimentar diversas posibilidades de acción con su cuerpo.",
+            4: "Reconocer el bienestar que le produce el movimiento libre en situaciones cotidianas y lúdicas.",
+            5: "Perfeccionar su coordinación visomotriz fina, a través del uso de diversos objetos, juguetes y utensilios.",
+            6: "Adquirir control y equilibrio en movimientos, posturas y desplazamientos.",
+            7: "Resolver desafíos prácticos en situaciones cotidianas y juegos, incorporando mayor precisión y coordinación.",
+            8: "Utilizar categorías de ubicación espacial y temporal (adelante/atrás, arriba/abajo, adentro/afuera).",
+        },
+    },
+    "Comunicacion Integral": {
+        "Lenguaje Verbal": {
+            1: "Expresarse oralmente, empleando estructuras oracionales simples y respetando patrones gramaticales básicos, en distintas situaciones cotidianas y juegos.",
+            2: "Comprender mensajes simples como instrucciones explícitas, explicaciones y preguntas relativas a objetos, personas, acciones, tiempo y lugar, identificando la intencionalidad comunicativa de diversos interlocutores.",
+            3: "Identificar algunos atributos de los sonidos de diferentes fuentes sonoras como intensidad (fuerte/suave), velocidad (rápido/lento).",
+            4: "Incorporar progresivamente nuevas palabras, al comunicar oralmente temas variados de su interés e información básica, en distintas situaciones cotidianas.",
+            5: "Manifestar interés por descubrir el contenido de textos de diferentes formatos, a través de la manipulación, la exploración, la escucha atenta y la formulación de preguntas.",
+            6: "Comprender a partir de la escucha atenta, contenidos explícitos de textos literarios y no literarios, reconociendo ideas centrales, señalando preferencias, realizando sencillas descripciones, preguntando sobre el contenido.",
+            7: "Reconocer progresivamente el significado de diversas imágenes, logos, símbolos de su entorno cotidiano, en diversos soportes (incluye uso de TICs).",
+            8: "Producir sus propios signos gráficos en situaciones lúdicas.",
+        },
+        "Lenguajes Artisticos": {
+            1: "Manifestar interés por diversas producciones artísticas (arquitectura, modelado, piezas musicales, pintura, dibujos, títeres, obras de teatro, danzas, entre otras), describiendo algunas características.",
+            2: "Expresar sus preferencias, sensaciones y emociones relacionadas con diferentes recursos expresivos que se encuentran en sencillas obras visuales (colorido, formas), musicales (fuente, intensidad del sonido) o escénicas (desplazamiento, vestimenta, carácter expresivo).",
+            3: "Interpretar canciones y juegos musicales, experimentando con diversos recursos tales como, la voz, el cuerpo, instrumentos musicales y objetos.",
+            4: "Expresar corporalmente sensaciones y emociones experimentando con mímica, juegos teatrales, rondas, bailes y danzas.",
+            5: "Expresar emociones, ideas y experiencias por medio de la plástica experimentando con recursos pictóricos, gráficos y de modelado.",
+            6: "Experimentar diversas posibilidades de expresión, combinando lenguajes artísticos en sus producciones.",
+            7: "Representar a través del dibujo, diversos elementos de su entorno, incorporando figuras cerradas, trazos intencionados y primeros esbozos de la figura humana.",
+        },
+    },
+    "Interaccion y Comprension del Entorno": {
+        "Exploracion del Entorno Natural": {
+            1: "Manifestar interés y asombro por diversos elementos, situaciones y fenómenos del entorno natural, explorando, observando, preguntando, describiendo, agrupando, entre otros.",
+            2: "Comunicar verbalmente características de elementos y paisajes de su entorno natural, tales como cuerpos celestes, cerros, desierto, flora; y de fenómenos como marejadas, sismos, tormentas, sequías.",
+            3: "Descubrir que el sol es fuente de luz y calor para el planeta, a través de experiencias directas o TICs.",
+            4: "Comunicar algunas propiedades básicas de los elementos naturales que explora, tales como: colores, texturas, tamaños, temperaturas entre otras.",
+            5: "Distinguir una variedad progresivamente más amplia de animales y plantas, respecto a sus características (tamaño, color, textura y morfología), sus necesidades básicas y los lugares que habitan, al observarlos en forma directa, en libros ilustrados o en TICs.",
+            6: "Colaborar en situaciones cotidianas, en acciones que contribuyen al desarrollo de ambientes sostenibles, tales como cerrar las llaves de agua, apagar aparatos eléctricos, entre otras.",
+            7: "Emplear instrumentos y herramientas de observación y recolección (lupas, frascos, recipientes, botellas, cucharas, embudos, pinzas, entre otros) en la exploración del entorno natural.",
+            8: "Experimentar mezclas y disoluciones con materiales cotidianos tales como: burbujas de jabón, agua salada, gelatina, describiendo los cambios observados.",
+            9: "Reconocer que el aire y el agua son elementos vitales para las personas, los animales y las plantas, y que estos elementos pueden encontrarse con o sin contaminación.",
+        },
+        "Comprension del Entorno Sociocultural": {
+            1: "Describir actividades habituales de su comunidad, como ir de compras, jugar en la plaza, viajar en bus, entre otras, señalando su participación en ellas.",
+            2: "Describir características de las formas de vida de su comunidad (viviendas, paisajes, costumbres), a través de canciones, juegos, relatos y fotos familiares, entre otras.",
+            3: "Seleccionar utensilios domésticos y objetos tecnológicos que les permiten resolver problemas en contextos sociales auténticos.",
+            4: "Reconocer sucesos significativos de su historia personal y familiar, en diversas situaciones, tales como: conversaciones familiares, relatos de un agente comunitario, visitas a lugares, observación de fotografías, entre otros.",
+            5: "Identificar instituciones significativas de su entorno, describiendo actividades y rutinas representativas que en ellas se realizan.",
+            6: "Identificar algunas normas de protección y seguridad de su entorno cotidiano referidas a alimentación, tránsito y sismos, y otras pertinentes a su contexto geográfico.",
+            7: "Distinguir en paisajes de su localidad, elementos naturales (bosque, cerros, ríos), y culturales (caminos, edificios, puentes).",
+        },
+        "Pensamiento Matematico": {
+            1: "Reproducir patrones sonoros, visuales, gestuales, corporales u otros, de dos o tres elementos.",
+            2: "Experimentar con diversos objetos, estableciendo relaciones al clasificar por dos atributos a la vez (forma, color, entre otros) y seriar por altura o longitud.",
+            3: "Describir la posición de objetos y personas, respecto de un punto u objeto de referencia, empleando conceptos de ubicación y distancia tales como: dentro/fuera; encima/debajo; cerca/lejos.",
+            4: "Orientarse temporalmente en situaciones cotidianas, mediante la utilización progresiva de algunas nociones y relaciones de secuencias, tales como: antes/después, día/noche, hoy/mañana.",
+            5: "Emplear cuantificadores, tales como: más/menos, mucho/poco, todo/ninguno, al comparar cantidades de objetos en situaciones cotidianas.",
+            6: "Emplear progresivamente los números, para contar, identificar, cuantificar y comparar cantidades, hasta el 10 e indicar orden o posición de algunos elementos en situaciones cotidianas o juegos.",
+            7: "Representar progresivamente, números y cantidades en forma concreta y pictórica hasta el 10.",
+            8: "Resolver progresivamente problemas simples, de manera concreta y pictórica, agregando o quitando hasta 5 elementos.",
+            9: "Descubrir atributos de figuras 3D, mediante la exploración de objetos presentes en su entorno.",
+            10: "Identificar algunas acciones que se llevaron a cabo para resolver problemas.",
+        },
+    },
+}
+
+# Mapas de nombre corto → nombre completo para normalizar lo que devuelve el LLM
+AMBITO_MAP = {
+    "Desarrollo Personal y Social": "Desarrollo Personal y Social",
+    "Comunicacion Integral": "Comunicacion Integral",
+    "Comunicación Integral": "Comunicacion Integral",
+    "Interaccion y Comprension del Entorno": "Interaccion y Comprension del Entorno",
+    "Interacción y Comprensión del Entorno": "Interaccion y Comprension del Entorno",
+}
+NUCLEO_MAP = {
+    "Identidad y Autonomia": "Identidad y Autonomia",
+    "Identidad y Autonomía": "Identidad y Autonomia",
+    "Convivencia y Ciudadania": "Convivencia y Ciudadania",
+    "Convivencia y Ciudadanía": "Convivencia y Ciudadania",
+    "Corporalidad y Movimiento": "Corporalidad y Movimiento",
+    "Lenguaje Verbal": "Lenguaje Verbal",
+    "Lenguajes Artisticos": "Lenguajes Artisticos",
+    "Lenguajes Artísticos": "Lenguajes Artisticos",
+    "Exploracion del Entorno Natural": "Exploracion del Entorno Natural",
+    "Exploración del Entorno Natural": "Exploracion del Entorno Natural",
+    "Comprension del Entorno Sociocultural": "Comprension del Entorno Sociocultural",
+    "Comprensión del Entorno Sociocultural": "Comprension del Entorno Sociocultural",
+    "Pensamiento Matematico": "Pensamiento Matematico",
+    "Pensamiento Matemático": "Pensamiento Matematico",
+}
+
+# Nombres de display (con tildes) para el documento
+AMBITO_DISPLAY = {
+    "Desarrollo Personal y Social": "Desarrollo Personal y Social",
+    "Comunicacion Integral": "Comunicación Integral",
+    "Interaccion y Comprension del Entorno": "Interacción y Comprensión del Entorno",
+}
+NUCLEO_DISPLAY = {
+    "Identidad y Autonomia": "Identidad y Autonomía",
+    "Convivencia y Ciudadania": "Convivencia y Ciudadanía",
+    "Corporalidad y Movimiento": "Corporalidad y Movimiento",
+    "Lenguaje Verbal": "Lenguaje Verbal",
+    "Lenguajes Artisticos": "Lenguajes Artísticos",
+    "Exploracion del Entorno Natural": "Exploración del Entorno Natural",
+    "Comprension del Entorno Sociocultural": "Comprensión del Entorno Sociocultural",
+    "Pensamiento Matematico": "Pensamiento Matemático",
+}
+
+
+def lookup_oa(ambito_raw: str, nucleo_raw: str, oa_num_raw: str) -> str:
+    """Busca el texto oficial del OA en el catálogo. Devuelve cadena vacía si no encuentra."""
+    ambito_key = AMBITO_MAP.get(ambito_raw, ambito_raw)
+    nucleo_key = NUCLEO_MAP.get(nucleo_raw, nucleo_raw)
+    try:
+        num = int(re.sub(r"[^0-9]", "", oa_num_raw))
+        return OA_CATALOG[ambito_key][nucleo_key][num]
+    except Exception:
+        return ""
+
+
+# ═══════════════════════════════════════════════════════
 # PROMPTS
 # ═══════════════════════════════════════════════════════
 
 SYSTEM_PROMPT = """Eres una experta en Educación Parvularia chilena. Generas planificaciones semanales para Nivel Medio Menor (3 años) siguiendo las Bases Curriculares de Educación Parvularia 2018.
 
-⚠️ REGLA ABSOLUTA — SIN EXCEPCIONES:
-Los campos "oa_num", "oa_texto", "oat_num" y "oat_texto" DEBEN copiarse TEXTUALMENTE del listado oficial que aparece mas abajo. PROHIBIDO inventar, parafrasear o modificar el texto de cualquier OA. Si el texto que escribes no aparece exactamente en el listado, es un error grave.
+⚠️ TU UNICA TAREA con OAs: elegir el AMBITO, NUCLEO y NUMERO de OA correcto. NO escribas el texto del OA — el sistema lo busca automaticamente. Solo escribe el numero (ej: "OA 5").
 
-⚠️ REGLA DE VARIEDAD — SIN EXCEPCIONES:
-Distribuye los ambitos de forma que CADA ambito aparezca al menos 1 vez en la semana. Nunca repitas el mismo Ambito mas de 2 veces. Los 3 ambitos deben estar presentes en la semana.
+⚠️ REGLA DE VARIEDAD OBLIGATORIA:
+Los 3 ambitos DEBEN aparecer durante la semana. Nunca el mismo ambito mas de 2 dias seguidos. Distribuye segun el tema de cada dia.
 
-EJEMPLO DE RESPUESTA CORRECTA para un dia con tema "El invierno":
-- ambito: "Interaccion y Comprension del Entorno"
-- nucleo: "Exploracion del Entorno Natural"
-- oa_num: "OA 4"
-- oa_texto: "Comunicar algunas propiedades basicas de los elementos naturales que explora, tales como: colores, texturas, tamanios, temperaturas entre otras."
-- oat_nucleo: "Corporalidad y Movimiento"
-- oat_num: "OA 6"
-- oat_texto: "Adquirir control y equilibrio en movimientos, posturas y desplazamientos."
+OPCIONES VALIDAS (elige solo el Ambito, Nucleo y numero):
 
-A continuacion encontraras el listado OFICIAL y COMPLETO de Objetivos de Aprendizaje para Nivel Medio Menor (Segundo Nivel) del BCEP 2018. COPIA el texto exactamente como aparece aqui:
+AMBITO: Desarrollo Personal y Social
+  NUCLEO: Identidad y Autonomia          → OA 1 al OA 12
+  NUCLEO: Convivencia y Ciudadania       → OA 1 al OA 10
+  NUCLEO: Corporalidad y Movimiento      → OA 1 al OA 8
 
-═══════════════════════════════════════════
-AMBITO 1: Desarrollo Personal y Social
-═══════════════════════════════════════════
+AMBITO: Comunicacion Integral
+  NUCLEO: Lenguaje Verbal                → OA 1 al OA 8
+  NUCLEO: Lenguajes Artisticos           → OA 1 al OA 7
 
-NUCLEO: Identidad y Autonomia
-OA 1: Representar verbal y corporalmente diferentes emociones y sentimientos, en sus juegos.
-OA 2: Manifestar disposicion y confianza al separarse de los adultos significativos.
-OA 3: Reconocer en si mismo, en otras personas y en personajes de cuentos, emociones.
-OA 4: Manifestar disposicion para regular sus emociones y sentimientos.
-OA 5: Manifestar sus preferencias cuando participa o solicita participar en situaciones cotidianas y juegos.
-OA 6: Actuar con progresiva independencia, ampliando su repertorio de acciones.
-OA 7: Comunicar algunos rasgos de su identidad, como su nombre, caracteristicas corporales, genero.
-OA 8: Apreciar sus caracteristicas identitarias, fortalezas y habilidades.
-OA 9: Manifestar progresiva independencia en practicas de alimentacion, vestimenta, higiene corporal, bucal.
-OA 10: Manifestar satisfaccion y confianza por su autovalia, comunicando algunos desafios alcanzados.
-OA 11: Identificar alimentos que se consumen en algunas celebraciones propias de su familia y comunidad.
-OA 12: Representar sus pensamientos y experiencias, atribuyendo significados a objetos o elementos.
+AMBITO: Interaccion y Comprension del Entorno
+  NUCLEO: Exploracion del Entorno Natural        → OA 1 al OA 9
+  NUCLEO: Comprension del Entorno Sociocultural  → OA 1 al OA 7
+  NUCLEO: Pensamiento Matematico                 → OA 1 al OA 10
 
-NUCLEO: Convivencia y Ciudadania
-OA 1: Participar en actividades y juegos grupales con sus pares, conversando, intercambiando pertenencias, cooperando.
-OA 2: Disfrutar de instancias de interaccion social con diversas personas de la comunidad.
-OA 3: Colaborar en situaciones cotidianas y de juego, proponiendo acciones simples frente a necesidades de pares.
-OA 4: Colaborar en actividades, conmemoraciones o celebraciones culturales de su familia y comunidad.
-OA 5: Iniciarse en la resolucion pacifica de conflictos, dialogando respecto de la situacion.
-OA 6: Manifestar disposicion para practicar acuerdos de convivencia basica que regulan situaciones cotidianas.
-OA 7: Identificar objetos, comportamientos y situaciones de riesgo que pueden atentar contra su seguridad.
-OA 8: Reconocer acciones correctas e incorrectas para la convivencia armonica del grupo.
-OA 9: Manifestar interes por algunos de sus derechos, tales como: ser escuchados, tener un nombre, jugar.
-OA 10: Manifestar interes para interactuar con ninos y ninas, reconociendo la diversidad de sus caracteristicas.
-
-NUCLEO: Corporalidad y Movimiento
-OA 1: Reconocer situaciones en que se siente comodo corporalmente.
-OA 2: Reconocer las principales partes, caracteristicas fisicas de su cuerpo y sus funciones.
-OA 3: Experimentar diversas posibilidades de accion con su cuerpo.
-OA 4: Reconocer el bienestar que le produce el movimiento libre en situaciones cotidianas y ludicas.
-OA 5: Perfeccionar su coordinacion visomotriz fina, a traves del uso de diversos objetos, juguetes y utensilios.
-OA 6: Adquirir control y equilibrio en movimientos, posturas y desplazamientos.
-OA 7: Resolver desafios practicos en situaciones cotidianas y juegos, incorporando mayor precision y coordinacion.
-OA 8: Utilizar categorias de ubicacion espacial y temporal (adelante/atras, arriba/abajo, adentro/afuera).
-
-═══════════════════════════════════════════
-AMBITO 2: Comunicacion Integral
-═══════════════════════════════════════════
-
-NUCLEO: Lenguaje Verbal
-OA 1: Expresarse oralmente, empleando estructuras oracionales simples y respetando patrones gramaticales basicos, en distintas situaciones cotidianas y juegos.
-OA 2: Comprender mensajes simples como instrucciones explicitas, explicaciones y preguntas relativas a objetos, personas, acciones, tiempo y lugar, identificando la intencionalidad comunicativa de diversos interlocutores.
-OA 3: Identificar algunos atributos de los sonidos de diferentes fuentes sonoras como intensidad (fuerte/suave), velocidad (rapido/lento).
-OA 4: Incorporar progresivamente nuevas palabras, al comunicar oralmente temas variados de su interes e informacion basica, en distintas situaciones cotidianas.
-OA 5: Manifestar interes por descubrir el contenido de textos de diferentes formatos, a traves de la manipulacion, la exploracion, la escucha atenta y la formulacion de preguntas.
-OA 6: Comprender a partir de la escucha atenta, contenidos explicitos de textos literarios y no literarios, reconociendo ideas centrales, senalando preferencias, realizando sencillas descripciones, preguntando sobre el contenido.
-OA 7: Reconocer progresivamente el significado de diversas imagenes, logos, simbolos de su entorno cotidiano, en diversos soportes (incluye uso de TICs).
-OA 8: Producir sus propios signos graficos en situaciones ludicas.
-
-NUCLEO: Lenguajes Artisticos
-OA 1: Manifestar interes por diversas producciones artisticas (arquitectura, modelado, piezas musicales, pintura, dibujos, titeres, obras de teatro, danzas, entre otras), describiendo algunas caracteristicas.
-OA 2: Expresar sus preferencias, sensaciones y emociones relacionadas con diferentes recursos expresivos que se encuentran en sencillas obras visuales (colorido, formas), musicales (fuente, intensidad del sonido) o escenicas (desplazamiento, vestimenta, caracter expresivo).
-OA 3: Interpretar canciones y juegos musicales, experimentando con diversos recursos tales como, la voz, el cuerpo, instrumentos musicales y objetos.
-OA 4: Expresar corporalmente sensaciones y emociones experimentando con mimica, juegos teatrales, rondas, bailes y danzas.
-OA 5: Expresar emociones, ideas y experiencias por medio de la plastica experimentando con recursos pictoricos, graficos y de modelado.
-OA 6: Experimentar diversas posibilidades de expresion, combinando lenguajes artisticos en sus producciones.
-OA 7: Representar a traves del dibujo, diversos elementos de su entorno, incorporando figuras cerradas, trazos intencionados y primeros esbozos de la figura humana.
-
-═══════════════════════════════════════════
-AMBITO 3: Interaccion y Comprension del Entorno
-═══════════════════════════════════════════
-
-NUCLEO: Exploracion del Entorno Natural
-OA 1: Manifestar interes y asombro por diversos elementos, situaciones y fenomenos del entorno natural, explorando, observando, preguntando, describiendo, agrupando, entre otros.
-OA 2: Comunicar verbalmente caracteristicas de elementos y paisajes de su entorno natural, tales como cuerpos celestes, cerros, desierto, flora; y de fenomenos como marejadas, sismos, tormentas, sequias.
-OA 3: Descubrir que el sol es fuente de luz y calor para el planeta, a traves de experiencias directas o TICs.
-OA 4: Comunicar algunas propiedades basicas de los elementos naturales que explora, tales como: colores, texturas, tamanios, temperaturas entre otras.
-OA 5: Distinguir una variedad progresivamente mas amplia de animales y plantas, respecto a sus caracteristicas (tamanio, color, textura y morfologia), sus necesidades basicas y los lugares que habitan, al observarlos en forma directa, en libros ilustrados o en TICs.
-OA 6: Colaborar en situaciones cotidianas, en acciones que contribuyen al desarrollo de ambientes sostenibles, tales como cerrar las llaves de agua, apagar aparatos electricos, entre otras.
-OA 7: Emplear instrumentos y herramientas de observacion y recoleccion (lupas, frascos, recipientes, botellas, cucharas, embudos, pinzas, entre otros) en la exploracion del entorno natural.
-OA 8: Experimentar mezclas y disoluciones con materiales cotidianos tales como: burbujas de jabon, agua salada, gelatina, describiendo los cambios observados.
-OA 9: Reconocer que el aire y el agua son elementos vitales para las personas, los animales y las plantas, y que estos elementos pueden encontrarse con o sin contaminacion.
-
-NUCLEO: Comprension del Entorno Sociocultural
-OA 1: Describir actividades habituales de su comunidad, como ir de compras, jugar en la plaza, viajar en bus, entre otras, senalando su participacion en ellas.
-OA 2: Describir caracteristicas de las formas de vida de su comunidad (viviendas, paisajes, costumbres), a traves de canciones, juegos, relatos y fotos familiares, entre otras.
-OA 3: Seleccionar utensilios domesticos y objetos tecnologicos que les permiten resolver problemas en contextos sociales autenticos.
-OA 4: Reconocer sucesos significativos de su historia personal y familiar, en diversas situaciones, tales como: conversaciones familiares, relatos de un agente comunitario, visitas a lugares, observacion de fotografias, entre otros.
-OA 5: Identificar instituciones significativas de su entorno, describiendo actividades y rutinas representativas que en ellas se realizan.
-OA 6: Identificar algunas normas de proteccion y seguridad de su entorno cotidiano referidas a alimentacion, transito y sismos, y otras pertinentes a su contexto geografico.
-OA 7: Distinguir en paisajes de su localidad, elementos naturales (bosque, cerros, rios), y culturales (caminos, edificios, puentes).
-
-NUCLEO: Pensamiento Matematico
-OA 1: Reproducir patrones sonoros, visuales, gestuales, corporales u otros, de dos o tres elementos.
-OA 2: Experimentar con diversos objetos, estableciendo relaciones al clasificar por dos atributos a la vez (forma, color, entre otros) y seriar por altura o longitud.
-OA 3: Describir la posicion de objetos y personas, respecto de un punto u objeto de referencia, empleando conceptos de ubicacion y distancia tales como: dentro/fuera; encima/debajo; cerca/lejos.
-OA 4: Orientarse temporalmente en situaciones cotidianas, mediante la utilizacion progresiva de algunas nociones y relaciones de secuencias, tales como: antes/despues, dia/noche, hoy/maniana.
-OA 5: Emplear cuantificadores, tales como: mas/menos, mucho/poco, todo/ninguno, al comparar cantidades de objetos en situaciones cotidianas.
-OA 6: Emplear progresivamente los numeros, para contar, identificar, cuantificar y comparar cantidades, hasta el 10 e indicar orden o posicion de algunos elementos en situaciones cotidianas o juegos.
-OA 7: Representar progresivamente, numeros y cantidades en forma concreta y pictorica hasta el 10.
-OA 8: Resolver progresivamente problemas simples, de manera concreta y pictorica, agregando o quitando hasta 5 elementos.
-OA 9: Descubrir atributos de figuras 3D, mediante la exploracion de objetos presentes en su entorno.
-OA 10: Identificar algunas acciones que se llevaron a cabo para resolver problemas.
+ORIENTACION para elegir segun tema:
+- Tema de naturaleza, animales, fenomenos, mezclas → Exploracion del Entorno Natural
+- Tema de comunidad, familia, costumbres, instituciones → Comprension del Entorno Sociocultural
+- Tema de numeros, formas, patrones, clasificar → Pensamiento Matematico
+- Tema de expresion corporal, danza, musica, plastica → Lenguajes Artisticos
+- Tema de cuentos, vocabulario, expresion oral → Lenguaje Verbal
+- Tema de emociones, identidad, autonomia, higiene → Identidad y Autonomia
+- Tema de juego grupal, normas, cooperacion → Convivencia y Ciudadania
+- Tema de movimiento, equilibrio, coordinacion motriz → Corporalidad y Movimiento
 
 El OAT siempre pertenece al Ambito "Desarrollo Personal y Social". Elige el nucleo y OAT mas complementario al OA principal elegido. IMPORTANTE: NO repitas el mismo ambito todos los dias — distribuye segun el tema de cada dia.
 
@@ -147,13 +216,11 @@ Responde SOLO con un objeto JSON valido sin texto adicional, sin bloques de codi
 El JSON debe tener claves: lunes, martes, miercoles, jueves, viernes. Cada una con exactamente estos campos:
 {
   "titulo_dia": "Lunes 9 de junio: Titulo creativo de la experiencia",
-  "ambito": "Nombre exacto del ambito del OA (Desarrollo Personal y Social | Comunicacion Integral | Interaccion y Comprension del Entorno)",
-  "nucleo": "Nombre exacto del nucleo dentro del ambito (ej: Identidad y Autonomia, Lenguajes Artisticos, Pensamiento Matematico)",
-  "oa_num": "Solo el numero del OA elegido (ej: OA 3)",
-  "oa_texto": "Texto completo del OA elegido sin incluir el numero",
-  "oat_nucleo": "Nombre del nucleo del OAT dentro de Desarrollo Personal y Social",
-  "oat_num": "Solo el numero del OAT (ej: OA 6)",
-  "oat_texto": "Texto completo del OAT elegido sin incluir el numero",
+  "ambito": "Uno de: Desarrollo Personal y Social | Comunicacion Integral | Interaccion y Comprension del Entorno",
+  "nucleo": "Nucleo exacto dentro del ambito elegido (ej: Identidad y Autonomia, Lenguajes Artisticos, Pensamiento Matematico)",
+  "oa_num": "SOLO el numero, formato exacto: OA 3  (no escribas el texto del OA)",
+  "oat_nucleo": "Nucleo del OAT dentro de Desarrollo Personal y Social (Identidad y Autonomia | Convivencia y Ciudadania | Corporalidad y Movimiento)",
+  "oat_num": "SOLO el numero del OAT, formato exacto: OA 6  (no escribas el texto)",
   "inicio": "Momento de inicio detallado (6-8 oraciones). La educadora presenta los materiales con entusiasmo usando dialogo directo con los ninos en primera persona (ej: 'Ninos y ninas, hoy les traje...'). Describe brevemente que es cada material de forma simple y cercana. Luego la educadora modela la accion ella primero ('Yo voy a probar... miren lo que pasa...'). Finaliza con una invitacion concreta a los ninos a participar ('Ahora ustedes pueden...'). Tono cercano, motivador y adecuado para 3 anos.",
   "escenario_1_titulo": "Titulo descriptivo escenario 1",
   "escenario_1_desc": "Descripcion detallada con mediacion y cierre 4-5 oraciones",
@@ -409,12 +476,18 @@ def build_planificacion(data: dict, ai: dict) -> bytes:
         aid        = ai.get(key, {})
         row        = table.rows[idx + 1]
 
-        ambito_txt = aid.get("ambito", "")
-        nucleo_txt = aid.get("nucleo", "")
-        oa_txt     = f"{aid.get('oa_num','')}: {aid.get('oa_texto','')}"
-        oat_nucleo = aid.get("oat_nucleo", "")
+        ambito_raw = aid.get("ambito", "")
+        nucleo_raw = aid.get("nucleo", "")
+        oa_num_raw = aid.get("oa_num", "")
+        ambito_txt = AMBITO_DISPLAY.get(AMBITO_MAP.get(ambito_raw, ambito_raw), ambito_raw)
+        nucleo_txt = NUCLEO_DISPLAY.get(NUCLEO_MAP.get(nucleo_raw, nucleo_raw), nucleo_raw)
+        oa_texto   = lookup_oa(ambito_raw, nucleo_raw, oa_num_raw)
+        oa_txt     = f"{oa_num_raw}: {oa_texto}" if oa_texto else oa_num_raw
+
+        oat_nucleo_raw = aid.get("oat_nucleo", "")
         oat_num    = aid.get("oat_num", "")
-        oat_texto  = aid.get("oat_texto", "")
+        oat_texto  = lookup_oa("Desarrollo Personal y Social", oat_nucleo_raw, oat_num)
+        oat_nucleo = NUCLEO_DISPLAY.get(NUCLEO_MAP.get(oat_nucleo_raw, oat_nucleo_raw), oat_nucleo_raw)
 
         c0 = row.cells[0]
         c0.paragraphs[0].clear()
@@ -727,13 +800,20 @@ def build_evaluacion(form: dict, ai: dict) -> bytes:
         ws.cell(1,1).fill = hfill("EFF6FF")
         ws.row_dimensions[1].height = 22
 
+        _ambito_e  = aid.get("ambito","")
+        _nucleo_e  = aid.get("nucleo","")
+        _oa_num_e  = aid.get("oa_num","")
+        _oat_nuc_e = aid.get("oat_nucleo","")
+        _oat_num_e = aid.get("oat_num","")
+        _oa_txt_e  = lookup_oa(_ambito_e, _nucleo_e, _oa_num_e)
+        _oat_txt_e = lookup_oa("Desarrollo Personal y Social", _oat_nuc_e, _oat_num_e)
         meta = [
-            ("Ámbito OA:",     aid.get("ambito","")),
-            ("Núcleo OA:",     aid.get("nucleo","")),
-            ("OA principal:",  f"{aid.get('oa_num','')}: {aid.get('oa_texto','')}"),
+            ("Ámbito OA:",     AMBITO_DISPLAY.get(AMBITO_MAP.get(_ambito_e, _ambito_e), _ambito_e)),
+            ("Núcleo OA:",     NUCLEO_DISPLAY.get(NUCLEO_MAP.get(_nucleo_e, _nucleo_e), _nucleo_e)),
+            ("OA principal:",  f"{_oa_num_e}: {_oa_txt_e}" if _oa_txt_e else _oa_num_e),
             ("Ámbito OAT:",    "Desarrollo Personal y Social"),
-            ("Núcleo OAT:",    aid.get("oat_nucleo","")),
-            ("OAT:",           f"{aid.get('oat_num','')}: {aid.get('oat_texto','')}"),
+            ("Núcleo OAT:",    NUCLEO_DISPLAY.get(NUCLEO_MAP.get(_oat_nuc_e, _oat_nuc_e), _oat_nuc_e)),
+            ("OAT:",           f"{_oat_num_e}: {_oat_txt_e}" if _oat_txt_e else _oat_num_e),
         ]
         for i, (lbl, val) in enumerate(meta):
             r = i + 2
