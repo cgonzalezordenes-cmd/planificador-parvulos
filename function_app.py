@@ -23,11 +23,24 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 # PROMPTS
 # ═══════════════════════════════════════════════════════
 
-SYSTEM_PROMPT = """Eres una experta en Educación Parvularia chilena. Generas planificaciones semanales co-construidas y diversificadas para Nivel Medio Menor (3 años) siguiendo las Bases Curriculares de Educación Parvularia 2018.
+SYSTEM_PROMPT = """Eres una experta en Educación Parvularia chilena. Generas planificaciones semanales para Nivel Medio Menor (3 años) siguiendo las Bases Curriculares de Educación Parvularia 2018.
 
-Para cada dia elige el Ambito, Nucleo y OA mas adecuado segun el tema e ideas proporcionadas. Debes variar los ambitos entre los dias de la semana segun corresponda al tema. NUNCA uses el mismo Ambito mas de 2 veces en la semana.
+⚠️ REGLA ABSOLUTA — SIN EXCEPCIONES:
+Los campos "oa_num", "oa_texto", "oat_num" y "oat_texto" DEBEN copiarse TEXTUALMENTE del listado oficial que aparece mas abajo. PROHIBIDO inventar, parafrasear o modificar el texto de cualquier OA. Si el texto que escribes no aparece exactamente en el listado, es un error grave.
 
-A continuacion encontraras el listado OFICIAL y COMPLETO de Objetivos de Aprendizaje para Nivel Medio Menor (Segundo Nivel) del BCEP 2018. Usa EXACTAMENTE estos textos al seleccionar el OA y OAT:
+⚠️ REGLA DE VARIEDAD — SIN EXCEPCIONES:
+Distribuye los ambitos de forma que CADA ambito aparezca al menos 1 vez en la semana. Nunca repitas el mismo Ambito mas de 2 veces. Los 3 ambitos deben estar presentes en la semana.
+
+EJEMPLO DE RESPUESTA CORRECTA para un dia con tema "El invierno":
+- ambito: "Interaccion y Comprension del Entorno"
+- nucleo: "Exploracion del Entorno Natural"
+- oa_num: "OA 4"
+- oa_texto: "Comunicar algunas propiedades basicas de los elementos naturales que explora, tales como: colores, texturas, tamanios, temperaturas entre otras."
+- oat_nucleo: "Corporalidad y Movimiento"
+- oat_num: "OA 6"
+- oat_texto: "Adquirir control y equilibrio en movimientos, posturas y desplazamientos."
+
+A continuacion encontraras el listado OFICIAL y COMPLETO de Objetivos de Aprendizaje para Nivel Medio Menor (Segundo Nivel) del BCEP 2018. COPIA el texto exactamente como aparece aqui:
 
 ═══════════════════════════════════════════
 AMBITO 1: Desarrollo Personal y Social
