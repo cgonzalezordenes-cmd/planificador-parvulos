@@ -46,6 +46,7 @@ El JSON debe tener claves: lunes, martes, miercoles, jueves, viernes. Cada una c
   "indicador_oa2": "Indicador observable 2 del OA comienza con verbo",
   "indicador_oat": "Indicador observable del OAT comienza con verbo",
   "oa_asignado": "Solo si OA fue auto-seleccionado: texto completo del OA elegido",
+  "nucleo_asignado": "Solo si OA fue auto-seleccionado: nombre del Nucleo al que pertenece el OA elegido",
   "oat_asignado": "Solo si OAT fue auto-seleccionado: texto completo del OAT elegido"
 }
 
@@ -303,7 +304,7 @@ def build_planificacion(data: dict, ai: dict) -> bytes:
         oat     = fd.get("oat") or {}
         row     = table.rows[idx + 1]
 
-        nucleo_txt = oa.get("nucleo") or aid.get("oa_asignado", "Ver planificación")
+        nucleo_txt = oa.get("nucleo") or aid.get("nucleo_asignado", "—")
         oa_txt     = f"{oa.get('num','')}: {oa.get('texto','')}" if oa else aid.get("oa_asignado", "")
         oat_nucleo = oat.get("nucleo", "Convivencia y Ciudadanía")
         oat_num    = oat.get("num", "")
